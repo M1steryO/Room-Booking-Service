@@ -17,6 +17,8 @@ services:
     volumes:
       # "./migrations/init.sql" - путь к миграциям БД
       - ./migrations/0001_init.up.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      internal:
 
   app:
     build: .
@@ -42,3 +44,6 @@ services:
         condition: service_healthy
     networks:
       - internal
+
+networks:
+  internal:
