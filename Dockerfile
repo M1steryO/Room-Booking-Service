@@ -1,16 +1,24 @@
-FROM golang:1.23 AS builder
+FROM golang:1.25-alpine AS builder
+
 WORKDIR /src
 
-COPY go.mod ./
+RUN apk add --no-cache ca-certificates tzdata
+
+COPY go.mod go.sum ./
 RUN go mod download
 
-COPY ../../Downloads/room-booking-service .
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /out/room-booking-usecase ./cmd/api
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+    go build -trimpath -ldflags="-s -w" \
+    -o /out/room-booking-service ./cmd/room-booking-service
 
-FROM gcr.io/distroless/static-debian12
+FROM alpine:latest
+
 WORKDIR /app
+
 COPY --from=builder /out/room-booking-service /app/room-booking-service
 
 EXPOSE 8080
+
 ENTRYPOINT ["/app/room-booking-service"]
 CMD ["serve"]
