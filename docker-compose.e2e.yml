@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  postgres_e2e:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: booking_e2e
+      POSTGRES_USER: booking
+      POSTGRES_PASSWORD: booking
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U booking -d booking_e2e"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app_e2e:
+    build: ../../Downloads/room-booking-service
+    depends_on:
+      postgres_e2e:
+        condition: service_healthy
+    environment:
+      APP_PORT: 8080
+      APP_ENV: e2e
+      DATABASE_URL: postgres://booking:booking@postgres_e2e:5432/booking_e2e?sslmode=disable
+      JWT_SECRET: e2e-secret
+      JWT_TTL: 24h
+      SLOT_HORIZON_DAYS: 14
+      CONFERENCE_BASE_URL: https://conference.mock.local
+      CONFERENCE_TIMEOUT: 2s
+
+  tests:
+    image: golang:1.23
+    working_dir: /workspace
+    depends_on:
+      app_e2e:
+        condition: service_started
+    environment:
+      E2E_BASE_URL: http://app_e2e:8080
+    volumes:
+      - ./:/workspace
+    command: ["/bin/sh", "-c", "go test -tags=e2e ./tests/e2e -v"]
