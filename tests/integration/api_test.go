@@ -71,7 +71,10 @@ func TestCancelBookingFlow(t *testing.T) {
 		t.Fatalf("cancel booking: %v", err)
 	}
 	defer func() {
-		_ = response.Body.Close()
+		err := response.Body.Close()
+		if err != nil {
+			t.Fatalf("close response body: %v", err)
+		}
 	}()
 
 	if response.StatusCode != http.StatusOK {

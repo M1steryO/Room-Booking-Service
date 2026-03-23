@@ -53,7 +53,10 @@ func (r *SlotsRepository) BulkUpsert(ctx context.Context, slots []domain.Slot) e
 
 	results := r.pool.SendBatch(ctx, batch)
 	defer func() {
-		_ = results.Close()
+		err := results.Close()
+		if err != nil {
+			return
+		}
 	}()
 
 	for range slots {
