@@ -14,14 +14,22 @@ services:
       retries: 20
 
   app_e2e:
-    build: ../../Downloads/room-booking-service
+    build: ../..
     depends_on:
       postgres_e2e:
         condition: service_healthy
     environment:
-      APP_PORT: 8080
-      APP_ENV: e2e
-      DATABASE_URL: postgres://booking:booking@postgres_e2e:5432/booking_e2e?sslmode=disable
+      HTTP_HOST: 0.0.0.0
+      HTTP_PORT: 8080
+
+      DB_HOST: postgres_e2e
+      DB_PORT: 5432
+      DB_USER: booking
+      DB_PASSWORD: booking
+      DATABASE_NAME: booking_e2e
+
+      ENV: e2e
+
       JWT_SECRET: e2e-secret
       JWT_TTL: 24h
       SLOT_HORIZON_DAYS: 14
@@ -37,5 +45,5 @@ services:
     environment:
       E2E_BASE_URL: http://app_e2e:8080
     volumes:
-      - ./:/workspace
+      - ../..:/workspace
     command: ["/bin/sh", "-c", "go test -tags=e2e ./tests/e2e -v"]
