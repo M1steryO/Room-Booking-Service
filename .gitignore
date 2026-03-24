@@ -6,7 +6,7 @@ dist/
 bin/
 docs/
 /coverage.out
-!/.idea/
+/.idea/
 bin
 local.env
 .postman
