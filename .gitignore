@@ -9,6 +9,7 @@ docs/
 !/.idea/
 !/bin/
 local.env
+.postman/
 
 
 # Binaries for programs and plugins
@@ -305,3 +306,4 @@ Temporary Items
 
 !/local.env
 !/bin/
+!/.postman/
