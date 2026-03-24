@@ -7,7 +7,7 @@ bin/
 docs/
 /coverage.out
 !/.idea/
-!/bin/
+/bin/
 /local.env
 /.postman/
 /postman/
