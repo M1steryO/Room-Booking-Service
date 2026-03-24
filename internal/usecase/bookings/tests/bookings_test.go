@@ -85,10 +85,10 @@ func TestCreateSuccessWithoutConferenceLink(t *testing.T) {
 
 	slotsRepo.GetByIDMock.Set(func(_ context.Context, _ string) (domain.Slot, error) {
 		return domain.Slot{
-			ID:      "s1",
-			RoomID:  "r1",
-			Start:   now.Add(time.Hour),
-			End:     now.Add(2 * time.Hour),
+			ID:        "s1",
+			RoomID:    "r1",
+			Start:     now.Add(time.Hour),
+			End:       now.Add(2 * time.Hour),
 			CreatedAt: now,
 		}, nil
 	})
@@ -190,6 +190,8 @@ func TestCreateConferenceLinkError(t *testing.T) {
 	now := time.Date(2026, 3, 23, 10, 0, 0, 0, time.UTC)
 	slotsRepo := repmocks.NewSlotRepositoryMock(t)
 	bookingsRepo := repmocks.NewBookingRepositoryMock(t)
+	conferenceErr := errors.New("conference unavailable")
+	var createCalled bool
 
 	slotsRepo.GetByIDMock.Set(func(_ context.Context, _ string) (domain.Slot, error) {
 		return domain.Slot{
@@ -199,7 +201,11 @@ func TestCreateConferenceLinkError(t *testing.T) {
 			End:    now.Add(2 * time.Hour),
 		}, nil
 	})
-	bookingsRepo.CreateMock.Optional()
+	bookingsRepo.CreateMock.Optional().
+		Inspect(func(_ context.Context, _ domain.Booking) {
+			createCalled = true
+		}).
+		Return(domain.Booking{}, nil)
 	bookingsRepo.ListAllMock.Optional()
 	bookingsRepo.ListByUserMock.Optional()
 	bookingsRepo.CancelByOwnerMock.Optional()
@@ -212,7 +218,7 @@ func TestCreateConferenceLinkError(t *testing.T) {
 		slotsRepo,
 		bookingsRepo,
 		conferenceStub{createFn: func(_ context.Context, _ string) (string, error) {
-			return "", errors.New("conference unavailable")
+			return "", conferenceErr
 		}},
 		fixedClock{now: now},
 	)
@@ -220,6 +226,15 @@ func TestCreateConferenceLinkError(t *testing.T) {
 	_, err := uc.Create(context.Background(), "u1", domain.RoleUser, "s1", true)
 	if err == nil {
 		t.Fatal("expected error")
+	}
+	if !errors.Is(err, conferenceErr) {
+		t.Fatalf("expected conference error, got %v", err)
+	}
+	if domain.AsAppError(err).Code != "INTERNAL_ERROR" {
+		t.Fatalf("expected INTERNAL_ERROR app code, got %s", domain.AsAppError(err).Code)
+	}
+	if createCalled {
+		t.Fatal("bookingsRepo.Create must not be called when conference link fails")
 	}
 }
 
@@ -254,6 +269,73 @@ func TestCancelDelegates(t *testing.T) {
 	}
 	if !called {
 		t.Fatal("expected CancelByOwner to be called")
+	}
+}
+
+func TestCancelForeignBookingForbidden(t *testing.T) {
+	slotsRepo := repmocks.NewSlotRepositoryMock(t)
+	bookingsRepo := repmocks.NewBookingRepositoryMock(t)
+
+	slotsRepo.GetByIDMock.Optional()
+	slotsRepo.BulkUpsertMock.Optional()
+	slotsRepo.DateHasSlotsMock.Optional()
+	slotsRepo.ListAvailableByRoomAndDateMock.Optional()
+	bookingsRepo.CreateMock.Optional()
+	bookingsRepo.ListAllMock.Optional()
+	bookingsRepo.ListByUserMock.Optional()
+	bookingsRepo.GetByIDMock.Set(func(_ context.Context, bookingID string) (domain.Booking, error) {
+		return domain.Booking{ID: bookingID, UserID: "another-user"}, nil
+	})
+	bookingsRepo.CancelByOwnerMock.Optional()
+
+	uc := bookingsuc.NewBookingsUsecase(
+		slotsRepo,
+		bookingsRepo,
+		conferenceStub{createFn: func(_ context.Context, _ string) (string, error) { return "", nil }},
+		fixedClock{now: time.Now().UTC()},
+	)
+
+	_, err := uc.Cancel(context.Background(), "u1", domain.RoleUser, "b1")
+	if err == nil {
+		t.Fatal("expected error")
+	}
+	if domain.AsAppError(err).Code != "FORBIDDEN" {
+		t.Fatalf("expected FORBIDDEN, got %s", domain.AsAppError(err).Code)
+	}
+}
+
+func TestCancelRepoError(t *testing.T) {
+	slotsRepo := repmocks.NewSlotRepositoryMock(t)
+	bookingsRepo := repmocks.NewBookingRepositoryMock(t)
+	repoErr := errors.New("db timeout")
+
+	slotsRepo.GetByIDMock.Optional()
+	slotsRepo.BulkUpsertMock.Optional()
+	slotsRepo.DateHasSlotsMock.Optional()
+	slotsRepo.ListAvailableByRoomAndDateMock.Optional()
+	bookingsRepo.CreateMock.Optional()
+	bookingsRepo.ListAllMock.Optional()
+	bookingsRepo.ListByUserMock.Optional()
+	bookingsRepo.GetByIDMock.Set(func(_ context.Context, bookingID string) (domain.Booking, error) {
+		return domain.Booking{ID: bookingID, UserID: "u1"}, nil
+	})
+	bookingsRepo.CancelByOwnerMock.Set(func(_ context.Context, _, _ string) error {
+		return repoErr
+	})
+
+	uc := bookingsuc.NewBookingsUsecase(
+		slotsRepo,
+		bookingsRepo,
+		conferenceStub{createFn: func(_ context.Context, _ string) (string, error) { return "", nil }},
+		fixedClock{now: time.Now().UTC()},
+	)
+
+	_, err := uc.Cancel(context.Background(), "u1", domain.RoleUser, "b1")
+	if err == nil {
+		t.Fatal("expected error")
+	}
+	if !errors.Is(err, repoErr) {
+		t.Fatalf("expected repo error, got %v", err)
 	}
 }
 

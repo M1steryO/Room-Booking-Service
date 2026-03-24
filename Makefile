@@ -41,8 +41,6 @@ seed:
 test:
 	go test ./... -coverprofile=coverage.out -covermode=atomic -coverpkg=./internal/...
 
-
-
 test-e2e:
 	docker compose -f docker-compose.e2e.yml down -v --remove-orphans
 	docker compose -f docker-compose.e2e.yml up -d postgres_e2e
@@ -54,7 +52,7 @@ test-e2e:
 
 test-coverage:
 	go clean -testcache
-	go test ./... -coverprofile=coverage.tmp.out -covermode count -coverpkg=./internal/usecase/... -count 5
+	go test ./... -coverprofile=coverage.tmp.out -covermode count -coverpkg=./internal/... -count 5
 	grep -v 'mocks\|config' coverage.tmp.out  > coverage.out
 	rm coverage.tmp.out
 	go tool cover -html=coverage.out;
