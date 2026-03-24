@@ -8,9 +8,9 @@ docs/
 /coverage.out
 !/.idea/
 !/bin/
-local.env
-.postman/
-postman/
+/local.env
+/.postman/
+/postman/
 
 
 
