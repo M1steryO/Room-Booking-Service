@@ -61,9 +61,10 @@ func (r *SlotsRepository) BulkUpsert(ctx context.Context, slots []domain.Slot) e
 		}
 
 		base := i * colsPerRow
-		sb.WriteString(fmt.Sprintf("($%d, $%d, $%d, $%d, $%d)",
+		
+		_, _ = fmt.Fprintf(&sb, "($%d, $%d, $%d, $%d, $%d)",
 			base+1, base+2, base+3, base+4, base+5,
-		))
+		)
 
 		args = append(args,
 			slot.ID,
