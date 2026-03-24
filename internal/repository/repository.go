@@ -21,7 +21,7 @@ type RoomRepository interface {
 }
 
 type ScheduleRepository interface {
-	Create(ctx context.Context, schedule domain.Schedule) (domain.Schedule, error)
+	CreateWithSlots(ctx context.Context, schedule domain.Schedule, slots []domain.Slot) (domain.Schedule, error)
 	GetByRoomID(ctx context.Context, roomID string) (domain.Schedule, error)
 }
 
@@ -37,5 +37,5 @@ type BookingRepository interface {
 	ListAll(ctx context.Context, page, pageSize int) ([]domain.Booking, int, error)
 	ListByUser(ctx context.Context, userID string, now time.Time) ([]domain.Booking, error)
 	GetByID(ctx context.Context, bookingID string) (domain.Booking, error)
-	CancelByOwner(ctx context.Context, bookingID, userID string) (domain.Booking, error)
+	CancelByOwner(ctx context.Context, bookingID, userID string) error
 }

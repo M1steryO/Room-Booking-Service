@@ -52,6 +52,54 @@ func TestDummyLoginInvalidRole(t *testing.T) {
 	}
 }
 
+func TestDummyLoginUsesFixedUserIDsByRole(t *testing.T) {
+	repo := repmocks.NewUserRepositoryMock(t)
+	repo.CreateMock.Optional()
+	repo.GetByEmailMock.Optional()
+	repo.UpsertSystemUsersMock.Optional()
+	jwtManager := security.NewJWTManager("secret", time.Hour)
+	uc := authuc.NewAuthUsecase(repo, fixedClock{now: time.Now().UTC()}, jwtManager)
+
+	cases := []struct {
+		name           string
+		role           domain.Role
+		expectedUserID string
+	}{
+		{
+			name:           "user role maps to user dummy id",
+			role:           domain.RoleUser,
+			expectedUserID: "00000000-0000-0000-0000-000000000002",
+		},
+		{
+			name:           "admin role maps to admin dummy id",
+			role:           domain.RoleAdmin,
+			expectedUserID: "00000000-0000-0000-0000-000000000001",
+		},
+	}
+
+	for _, testCase := range cases {
+		t.Run(testCase.name, func(t *testing.T) {
+			token, err := uc.DummyLogin(testCase.role)
+			if err != nil {
+				t.Fatalf("DummyLogin error: %v", err)
+			}
+
+			claims, err := jwtManager.Parse(token)
+			if err != nil {
+				t.Fatalf("Parse token error: %v", err)
+			}
+
+			if claims.UserID != testCase.expectedUserID {
+				t.Fatalf("unexpected user_id in token: got=%s want=%s", claims.UserID, testCase.expectedUserID)
+			}
+
+			if claims.Role != testCase.role {
+				t.Fatalf("unexpected role in token: got=%s want=%s", claims.Role, testCase.role)
+			}
+		})
+	}
+}
+
 func TestRegisterAndLogin(t *testing.T) {
 	var created domain.User
 	password := "qwerty123"

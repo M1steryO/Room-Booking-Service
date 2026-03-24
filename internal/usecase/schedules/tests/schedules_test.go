@@ -21,7 +21,7 @@ func TestCreateForbiddenForUser(t *testing.T) {
 	roomsRepo.GetByIDMock.Optional()
 	roomsRepo.CreateMock.Optional()
 	roomsRepo.ListMock.Optional()
-	schedulesRepo.CreateMock.Optional()
+	schedulesRepo.CreateWithSlotsMock.Optional()
 	schedulesRepo.GetByRoomIDMock.Optional()
 	slotsRepo.BulkUpsertMock.Optional()
 	slotsRepo.DateHasSlotsMock.Optional()
@@ -42,19 +42,19 @@ func TestCreateForbiddenForUser(t *testing.T) {
 }
 
 func TestCreateSuccessGeneratesSlots(t *testing.T) {
-	var upserted int
+	var inserted int
 	roomsRepo := repmocks.NewRoomRepositoryMock(t)
 	schedulesRepo := repmocks.NewScheduleRepositoryMock(t)
 	slotsRepo := repmocks.NewSlotRepositoryMock(t)
 	roomsRepo.GetByIDMock.Set(func(_ context.Context, _ string) (domain.Room, error) { return domain.Room{ID: "r1"}, nil })
-	schedulesRepo.CreateMock.Set(func(_ context.Context, s domain.Schedule) (domain.Schedule, error) { return s, nil })
-	slotsRepo.BulkUpsertMock.Set(func(_ context.Context, slots []domain.Slot) error {
-		upserted = len(slots)
-		return nil
+	schedulesRepo.CreateWithSlotsMock.Set(func(_ context.Context, s domain.Schedule, slots []domain.Slot) (domain.Schedule, error) {
+		inserted = len(slots)
+		return s, nil
 	})
 	roomsRepo.CreateMock.Optional()
 	roomsRepo.ListMock.Optional()
 	schedulesRepo.GetByRoomIDMock.Optional()
+	slotsRepo.BulkUpsertMock.Optional()
 	slotsRepo.DateHasSlotsMock.Optional()
 	slotsRepo.GetByIDMock.Optional()
 	slotsRepo.ListAvailableByRoomAndDateMock.Optional()
@@ -70,7 +70,7 @@ func TestCreateSuccessGeneratesSlots(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Create error: %v", err)
 	}
-	if upserted == 0 {
-		t.Fatal("expected generated slots to be upserted")
+	if inserted == 0 {
+		t.Fatal("expected generated slots to be passed to transactional create")
 	}
 }

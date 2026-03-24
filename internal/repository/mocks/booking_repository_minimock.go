@@ -20,7 +20,7 @@ type BookingRepositoryMock struct {
 	t          minimock.Tester
 	finishOnce sync.Once
 
-	funcCancelByOwner          func(ctx context.Context, bookingID string, userID string) (b1 domain.Booking, err error)
+	funcCancelByOwner          func(ctx context.Context, bookingID string, userID string) (err error)
 	funcCancelByOwnerOrigin    string
 	inspectFuncCancelByOwner   func(ctx context.Context, bookingID string, userID string)
 	afterCancelByOwnerCounter  uint64
@@ -124,7 +124,6 @@ type BookingRepositoryMockCancelByOwnerParamPtrs struct {
 
 // BookingRepositoryMockCancelByOwnerResults contains results of the BookingRepository.CancelByOwner
 type BookingRepositoryMockCancelByOwnerResults struct {
-	b1  domain.Booking
 	err error
 }
 
@@ -252,7 +251,7 @@ func (mmCancelByOwner *mBookingRepositoryMockCancelByOwner) Inspect(f func(ctx c
 }
 
 // Return sets up results that will be returned by BookingRepository.CancelByOwner
-func (mmCancelByOwner *mBookingRepositoryMockCancelByOwner) Return(b1 domain.Booking, err error) *BookingRepositoryMock {
+func (mmCancelByOwner *mBookingRepositoryMockCancelByOwner) Return(err error) *BookingRepositoryMock {
 	if mmCancelByOwner.mock.funcCancelByOwner != nil {
 		mmCancelByOwner.mock.t.Fatalf("BookingRepositoryMock.CancelByOwner mock is already set by Set")
 	}
@@ -260,13 +259,13 @@ func (mmCancelByOwner *mBookingRepositoryMockCancelByOwner) Return(b1 domain.Boo
 	if mmCancelByOwner.defaultExpectation == nil {
 		mmCancelByOwner.defaultExpectation = &BookingRepositoryMockCancelByOwnerExpectation{mock: mmCancelByOwner.mock}
 	}
-	mmCancelByOwner.defaultExpectation.results = &BookingRepositoryMockCancelByOwnerResults{b1, err}
+	mmCancelByOwner.defaultExpectation.results = &BookingRepositoryMockCancelByOwnerResults{err}
 	mmCancelByOwner.defaultExpectation.returnOrigin = minimock.CallerInfo(1)
 	return mmCancelByOwner.mock
 }
 
 // Set uses given function f to mock the BookingRepository.CancelByOwner method
-func (mmCancelByOwner *mBookingRepositoryMockCancelByOwner) Set(f func(ctx context.Context, bookingID string, userID string) (b1 domain.Booking, err error)) *BookingRepositoryMock {
+func (mmCancelByOwner *mBookingRepositoryMockCancelByOwner) Set(f func(ctx context.Context, bookingID string, userID string) (err error)) *BookingRepositoryMock {
 	if mmCancelByOwner.defaultExpectation != nil {
 		mmCancelByOwner.mock.t.Fatalf("Default expectation is already set for the BookingRepository.CancelByOwner method")
 	}
@@ -297,8 +296,8 @@ func (mmCancelByOwner *mBookingRepositoryMockCancelByOwner) When(ctx context.Con
 }
 
 // Then sets up BookingRepository.CancelByOwner return parameters for the expectation previously defined by the When method
-func (e *BookingRepositoryMockCancelByOwnerExpectation) Then(b1 domain.Booking, err error) *BookingRepositoryMock {
-	e.results = &BookingRepositoryMockCancelByOwnerResults{b1, err}
+func (e *BookingRepositoryMockCancelByOwnerExpectation) Then(err error) *BookingRepositoryMock {
+	e.results = &BookingRepositoryMockCancelByOwnerResults{err}
 	return e.mock
 }
 
@@ -324,7 +323,7 @@ func (mmCancelByOwner *mBookingRepositoryMockCancelByOwner) invocationsDone() bo
 }
 
 // CancelByOwner implements mm_repository.BookingRepository
-func (mmCancelByOwner *BookingRepositoryMock) CancelByOwner(ctx context.Context, bookingID string, userID string) (b1 domain.Booking, err error) {
+func (mmCancelByOwner *BookingRepositoryMock) CancelByOwner(ctx context.Context, bookingID string, userID string) (err error) {
 	mm_atomic.AddUint64(&mmCancelByOwner.beforeCancelByOwnerCounter, 1)
 	defer mm_atomic.AddUint64(&mmCancelByOwner.afterCancelByOwnerCounter, 1)
 
@@ -344,7 +343,7 @@ func (mmCancelByOwner *BookingRepositoryMock) CancelByOwner(ctx context.Context,
 	for _, e := range mmCancelByOwner.CancelByOwnerMock.expectations {
 		if minimock.Equal(*e.params, mm_params) {
 			mm_atomic.AddUint64(&e.Counter, 1)
-			return e.results.b1, e.results.err
+			return e.results.err
 		}
 	}
 
@@ -381,7 +380,7 @@ func (mmCancelByOwner *BookingRepositoryMock) CancelByOwner(ctx context.Context,
 		if mm_results == nil {
 			mmCancelByOwner.t.Fatal("No results are set for the BookingRepositoryMock.CancelByOwner")
 		}
-		return (*mm_results).b1, (*mm_results).err
+		return (*mm_results).err
 	}
 	if mmCancelByOwner.funcCancelByOwner != nil {
 		return mmCancelByOwner.funcCancelByOwner(ctx, bookingID, userID)

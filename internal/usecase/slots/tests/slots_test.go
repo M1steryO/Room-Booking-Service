@@ -24,7 +24,7 @@ func TestListAvailableNoScheduleReturnsEmpty(t *testing.T) {
 	slotsRepo.GetByIDMock.Optional()
 	roomsRepo.CreateMock.Optional()
 	roomsRepo.ListMock.Optional()
-	schedulesRepo.CreateMock.Optional()
+	schedulesRepo.CreateWithSlotsMock.Optional()
 	uc := slotsuc.NewSlotsUsecase(roomsRepo, schedulesRepo, slotsRepo)
 
 	got, err := uc.ListAvailable(context.Background(), "r1", time.Now().UTC())
@@ -56,7 +56,7 @@ func TestListAvailableGeneratesWhenMissing(t *testing.T) {
 	slotsRepo.GetByIDMock.Optional()
 	roomsRepo.CreateMock.Optional()
 	roomsRepo.ListMock.Optional()
-	schedulesRepo.CreateMock.Optional()
+	schedulesRepo.CreateWithSlotsMock.Optional()
 	uc := slotsuc.NewSlotsUsecase(roomsRepo, schedulesRepo, slotsRepo)
 
 	date := time.Date(2026, 3, 23, 0, 0, 0, 0, time.UTC)

@@ -10,6 +10,20 @@ func (u *BookingsUsecase) Cancel(ctx context.Context, actorID string, actorRole 
 	if actorRole != domain.RoleUser {
 		return domain.Booking{}, domain.Forbidden("user role required")
 	}
+	booking, err := u.bookingsRepo.GetByID(ctx, bookingID)
+	if err != nil {
+		return domain.Booking{}, err
+	}
 
-	return u.bookingsRepo.CancelByOwner(ctx, bookingID, actorID)
+	if booking.UserID != actorID {
+		return domain.Booking{}, domain.Forbidden("cannot cancel another user's booking")
+	}
+
+	err = u.bookingsRepo.CancelByOwner(ctx, bookingID, actorID)
+	if err != nil {
+		return domain.Booking{}, err
+	}
+
+	booking.Status = domain.BookingStatusCancelled
+	return booking, nil
 }

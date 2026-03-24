@@ -30,15 +30,10 @@ func (u *SchedulesUsecase) Create(ctx context.Context, actorRole domain.Role, ro
 		CreatedAt:  u.clock.Now(),
 	}
 
-	created, err := u.schedulesRepo.Create(ctx, schedule)
-	if err != nil {
-		return domain.Schedule{}, err
-	}
-
 	window := helpers.DatesWindow(u.clock.Now(), u.slotHorizonDay)
 	allSlots := make([]domain.Slot, 0)
 	for _, date := range window {
-		slots, genErr := helpers.GenerateSlotsForDate(roomID, created, date)
+		slots, genErr := helpers.GenerateSlotsForDate(roomID, schedule, date)
 		if genErr != nil {
 			return domain.Schedule{}, genErr
 		}
@@ -46,10 +41,9 @@ func (u *SchedulesUsecase) Create(ctx context.Context, actorRole domain.Role, ro
 		allSlots = append(allSlots, slots...)
 	}
 
-	if len(allSlots) > 0 {
-		if err := u.slotsRepo.BulkUpsert(ctx, allSlots); err != nil {
-			return domain.Schedule{}, err
-		}
+	created, err := u.schedulesRepo.CreateWithSlots(ctx, schedule, allSlots)
+	if err != nil {
+		return domain.Schedule{}, err
 	}
 
 	return created, nil

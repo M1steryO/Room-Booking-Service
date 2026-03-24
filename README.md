@@ -1,5 +1,8 @@
 # Room Booking Service
 
+[![CI](https://github.com/avito-internships/test-backend-1-M1steryO/actions/workflows/ci.yml/badge.svg)](https://github.com/avito-internships/test-backend-1-M1steryO/actions/workflows/ci.yml)
+[![Classroom](https://github.com/avito-internships/test-backend-1-M1steryO/actions/workflows/classroom.yml/badge.svg)](https://github.com/avito-internships/test-backend-1-M1steryO/actions/workflows/classroom.yml)
+
 
 ## Запуск 
 

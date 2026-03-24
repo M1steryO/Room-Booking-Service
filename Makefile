@@ -39,7 +39,8 @@ seed:
 	go run ./cmd/room-booking-service seed
 
 test:
-	go test ./... -coverprofile=coverage.out -covermode=atomic
+	go test ./... -coverprofile=coverage.out -covermode=atomic -coverpkg=./internal/...
+
 
 
 test-e2e:

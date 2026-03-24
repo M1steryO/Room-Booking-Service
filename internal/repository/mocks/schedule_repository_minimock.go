@@ -19,12 +19,12 @@ type ScheduleRepositoryMock struct {
 	t          minimock.Tester
 	finishOnce sync.Once
 
-	funcCreate          func(ctx context.Context, schedule domain.Schedule) (s1 domain.Schedule, err error)
-	funcCreateOrigin    string
-	inspectFuncCreate   func(ctx context.Context, schedule domain.Schedule)
-	afterCreateCounter  uint64
-	beforeCreateCounter uint64
-	CreateMock          mScheduleRepositoryMockCreate
+	funcCreateWithSlots          func(ctx context.Context, schedule domain.Schedule, slots []domain.Slot) (s1 domain.Schedule, err error)
+	funcCreateWithSlotsOrigin    string
+	inspectFuncCreateWithSlots   func(ctx context.Context, schedule domain.Schedule, slots []domain.Slot)
+	afterCreateWithSlotsCounter  uint64
+	beforeCreateWithSlotsCounter uint64
+	CreateWithSlotsMock          mScheduleRepositoryMockCreateWithSlots
 
 	funcGetByRoomID          func(ctx context.Context, roomID string) (s1 domain.Schedule, err error)
 	funcGetByRoomIDOrigin    string
@@ -42,8 +42,8 @@ func NewScheduleRepositoryMock(t minimock.Tester) *ScheduleRepositoryMock {
 		controller.RegisterMocker(m)
 	}
 
-	m.CreateMock = mScheduleRepositoryMockCreate{mock: m}
-	m.CreateMock.callArgs = []*ScheduleRepositoryMockCreateParams{}
+	m.CreateWithSlotsMock = mScheduleRepositoryMockCreateWithSlots{mock: m}
+	m.CreateWithSlotsMock.callArgs = []*ScheduleRepositoryMockCreateWithSlotsParams{}
 
 	m.GetByRoomIDMock = mScheduleRepositoryMockGetByRoomID{mock: m}
 	m.GetByRoomIDMock.callArgs = []*ScheduleRepositoryMockGetByRoomIDParams{}
@@ -53,53 +53,56 @@ func NewScheduleRepositoryMock(t minimock.Tester) *ScheduleRepositoryMock {
 	return m
 }
 
-type mScheduleRepositoryMockCreate struct {
+type mScheduleRepositoryMockCreateWithSlots struct {
 	optional           bool
 	mock               *ScheduleRepositoryMock
-	defaultExpectation *ScheduleRepositoryMockCreateExpectation
-	expectations       []*ScheduleRepositoryMockCreateExpectation
+	defaultExpectation *ScheduleRepositoryMockCreateWithSlotsExpectation
+	expectations       []*ScheduleRepositoryMockCreateWithSlotsExpectation
 
-	callArgs []*ScheduleRepositoryMockCreateParams
+	callArgs []*ScheduleRepositoryMockCreateWithSlotsParams
 	mutex    sync.RWMutex
 
 	expectedInvocations       uint64
 	expectedInvocationsOrigin string
 }
 
-// ScheduleRepositoryMockCreateExpectation specifies expectation struct of the ScheduleRepository.Create
-type ScheduleRepositoryMockCreateExpectation struct {
+// ScheduleRepositoryMockCreateWithSlotsExpectation specifies expectation struct of the ScheduleRepository.CreateWithSlots
+type ScheduleRepositoryMockCreateWithSlotsExpectation struct {
 	mock               *ScheduleRepositoryMock
-	params             *ScheduleRepositoryMockCreateParams
-	paramPtrs          *ScheduleRepositoryMockCreateParamPtrs
-	expectationOrigins ScheduleRepositoryMockCreateExpectationOrigins
-	results            *ScheduleRepositoryMockCreateResults
+	params             *ScheduleRepositoryMockCreateWithSlotsParams
+	paramPtrs          *ScheduleRepositoryMockCreateWithSlotsParamPtrs
+	expectationOrigins ScheduleRepositoryMockCreateWithSlotsExpectationOrigins
+	results            *ScheduleRepositoryMockCreateWithSlotsResults
 	returnOrigin       string
 	Counter            uint64
 }
 
-// ScheduleRepositoryMockCreateParams contains parameters of the ScheduleRepository.Create
-type ScheduleRepositoryMockCreateParams struct {
+// ScheduleRepositoryMockCreateWithSlotsParams contains parameters of the ScheduleRepository.CreateWithSlots
+type ScheduleRepositoryMockCreateWithSlotsParams struct {
 	ctx      context.Context
 	schedule domain.Schedule
+	slots    []domain.Slot
 }
 
-// ScheduleRepositoryMockCreateParamPtrs contains pointers to parameters of the ScheduleRepository.Create
-type ScheduleRepositoryMockCreateParamPtrs struct {
+// ScheduleRepositoryMockCreateWithSlotsParamPtrs contains pointers to parameters of the ScheduleRepository.CreateWithSlots
+type ScheduleRepositoryMockCreateWithSlotsParamPtrs struct {
 	ctx      *context.Context
 	schedule *domain.Schedule
+	slots    *[]domain.Slot
 }
 
-// ScheduleRepositoryMockCreateResults contains results of the ScheduleRepository.Create
-type ScheduleRepositoryMockCreateResults struct {
+// ScheduleRepositoryMockCreateWithSlotsResults contains results of the ScheduleRepository.CreateWithSlots
+type ScheduleRepositoryMockCreateWithSlotsResults struct {
 	s1  domain.Schedule
 	err error
 }
 
-// ScheduleRepositoryMockCreateOrigins contains origins of expectations of the ScheduleRepository.Create
-type ScheduleRepositoryMockCreateExpectationOrigins struct {
+// ScheduleRepositoryMockCreateWithSlotsOrigins contains origins of expectations of the ScheduleRepository.CreateWithSlots
+type ScheduleRepositoryMockCreateWithSlotsExpectationOrigins struct {
 	origin         string
 	originCtx      string
 	originSchedule string
+	originSlots    string
 }
 
 // Marks this method to be optional. The default behavior of any method with Return() is '1 or more', meaning
@@ -107,292 +110,320 @@ type ScheduleRepositoryMockCreateExpectationOrigins struct {
 // Optional() makes method check to work in '0 or more' mode.
 // It is NOT RECOMMENDED to use this option unless you really need it, as default behaviour helps to
 // catch the problems when the expected method call is totally skipped during test run.
-func (mmCreate *mScheduleRepositoryMockCreate) Optional() *mScheduleRepositoryMockCreate {
-	mmCreate.optional = true
-	return mmCreate
+func (mmCreateWithSlots *mScheduleRepositoryMockCreateWithSlots) Optional() *mScheduleRepositoryMockCreateWithSlots {
+	mmCreateWithSlots.optional = true
+	return mmCreateWithSlots
 }
 
-// Expect sets up expected params for ScheduleRepository.Create
-func (mmCreate *mScheduleRepositoryMockCreate) Expect(ctx context.Context, schedule domain.Schedule) *mScheduleRepositoryMockCreate {
-	if mmCreate.mock.funcCreate != nil {
-		mmCreate.mock.t.Fatalf("ScheduleRepositoryMock.Create mock is already set by Set")
+// Expect sets up expected params for ScheduleRepository.CreateWithSlots
+func (mmCreateWithSlots *mScheduleRepositoryMockCreateWithSlots) Expect(ctx context.Context, schedule domain.Schedule, slots []domain.Slot) *mScheduleRepositoryMockCreateWithSlots {
+	if mmCreateWithSlots.mock.funcCreateWithSlots != nil {
+		mmCreateWithSlots.mock.t.Fatalf("ScheduleRepositoryMock.CreateWithSlots mock is already set by Set")
 	}
 
-	if mmCreate.defaultExpectation == nil {
-		mmCreate.defaultExpectation = &ScheduleRepositoryMockCreateExpectation{}
+	if mmCreateWithSlots.defaultExpectation == nil {
+		mmCreateWithSlots.defaultExpectation = &ScheduleRepositoryMockCreateWithSlotsExpectation{}
 	}
 
-	if mmCreate.defaultExpectation.paramPtrs != nil {
-		mmCreate.mock.t.Fatalf("ScheduleRepositoryMock.Create mock is already set by ExpectParams functions")
+	if mmCreateWithSlots.defaultExpectation.paramPtrs != nil {
+		mmCreateWithSlots.mock.t.Fatalf("ScheduleRepositoryMock.CreateWithSlots mock is already set by ExpectParams functions")
 	}
 
-	mmCreate.defaultExpectation.params = &ScheduleRepositoryMockCreateParams{ctx, schedule}
-	mmCreate.defaultExpectation.expectationOrigins.origin = minimock.CallerInfo(1)
-	for _, e := range mmCreate.expectations {
-		if minimock.Equal(e.params, mmCreate.defaultExpectation.params) {
-			mmCreate.mock.t.Fatalf("Expectation set by When has same params: %#v", *mmCreate.defaultExpectation.params)
+	mmCreateWithSlots.defaultExpectation.params = &ScheduleRepositoryMockCreateWithSlotsParams{ctx, schedule, slots}
+	mmCreateWithSlots.defaultExpectation.expectationOrigins.origin = minimock.CallerInfo(1)
+	for _, e := range mmCreateWithSlots.expectations {
+		if minimock.Equal(e.params, mmCreateWithSlots.defaultExpectation.params) {
+			mmCreateWithSlots.mock.t.Fatalf("Expectation set by When has same params: %#v", *mmCreateWithSlots.defaultExpectation.params)
 		}
 	}
 
-	return mmCreate
+	return mmCreateWithSlots
 }
 
-// ExpectCtxParam1 sets up expected param ctx for ScheduleRepository.Create
-func (mmCreate *mScheduleRepositoryMockCreate) ExpectCtxParam1(ctx context.Context) *mScheduleRepositoryMockCreate {
-	if mmCreate.mock.funcCreate != nil {
-		mmCreate.mock.t.Fatalf("ScheduleRepositoryMock.Create mock is already set by Set")
+// ExpectCtxParam1 sets up expected param ctx for ScheduleRepository.CreateWithSlots
+func (mmCreateWithSlots *mScheduleRepositoryMockCreateWithSlots) ExpectCtxParam1(ctx context.Context) *mScheduleRepositoryMockCreateWithSlots {
+	if mmCreateWithSlots.mock.funcCreateWithSlots != nil {
+		mmCreateWithSlots.mock.t.Fatalf("ScheduleRepositoryMock.CreateWithSlots mock is already set by Set")
 	}
 
-	if mmCreate.defaultExpectation == nil {
-		mmCreate.defaultExpectation = &ScheduleRepositoryMockCreateExpectation{}
+	if mmCreateWithSlots.defaultExpectation == nil {
+		mmCreateWithSlots.defaultExpectation = &ScheduleRepositoryMockCreateWithSlotsExpectation{}
 	}
 
-	if mmCreate.defaultExpectation.params != nil {
-		mmCreate.mock.t.Fatalf("ScheduleRepositoryMock.Create mock is already set by Expect")
+	if mmCreateWithSlots.defaultExpectation.params != nil {
+		mmCreateWithSlots.mock.t.Fatalf("ScheduleRepositoryMock.CreateWithSlots mock is already set by Expect")
 	}
 
-	if mmCreate.defaultExpectation.paramPtrs == nil {
-		mmCreate.defaultExpectation.paramPtrs = &ScheduleRepositoryMockCreateParamPtrs{}
+	if mmCreateWithSlots.defaultExpectation.paramPtrs == nil {
+		mmCreateWithSlots.defaultExpectation.paramPtrs = &ScheduleRepositoryMockCreateWithSlotsParamPtrs{}
 	}
-	mmCreate.defaultExpectation.paramPtrs.ctx = &ctx
-	mmCreate.defaultExpectation.expectationOrigins.originCtx = minimock.CallerInfo(1)
+	mmCreateWithSlots.defaultExpectation.paramPtrs.ctx = &ctx
+	mmCreateWithSlots.defaultExpectation.expectationOrigins.originCtx = minimock.CallerInfo(1)
 
-	return mmCreate
+	return mmCreateWithSlots
 }
 
-// ExpectScheduleParam2 sets up expected param schedule for ScheduleRepository.Create
-func (mmCreate *mScheduleRepositoryMockCreate) ExpectScheduleParam2(schedule domain.Schedule) *mScheduleRepositoryMockCreate {
-	if mmCreate.mock.funcCreate != nil {
-		mmCreate.mock.t.Fatalf("ScheduleRepositoryMock.Create mock is already set by Set")
+// ExpectScheduleParam2 sets up expected param schedule for ScheduleRepository.CreateWithSlots
+func (mmCreateWithSlots *mScheduleRepositoryMockCreateWithSlots) ExpectScheduleParam2(schedule domain.Schedule) *mScheduleRepositoryMockCreateWithSlots {
+	if mmCreateWithSlots.mock.funcCreateWithSlots != nil {
+		mmCreateWithSlots.mock.t.Fatalf("ScheduleRepositoryMock.CreateWithSlots mock is already set by Set")
 	}
 
-	if mmCreate.defaultExpectation == nil {
-		mmCreate.defaultExpectation = &ScheduleRepositoryMockCreateExpectation{}
+	if mmCreateWithSlots.defaultExpectation == nil {
+		mmCreateWithSlots.defaultExpectation = &ScheduleRepositoryMockCreateWithSlotsExpectation{}
 	}
 
-	if mmCreate.defaultExpectation.params != nil {
-		mmCreate.mock.t.Fatalf("ScheduleRepositoryMock.Create mock is already set by Expect")
+	if mmCreateWithSlots.defaultExpectation.params != nil {
+		mmCreateWithSlots.mock.t.Fatalf("ScheduleRepositoryMock.CreateWithSlots mock is already set by Expect")
 	}
 
-	if mmCreate.defaultExpectation.paramPtrs == nil {
-		mmCreate.defaultExpectation.paramPtrs = &ScheduleRepositoryMockCreateParamPtrs{}
+	if mmCreateWithSlots.defaultExpectation.paramPtrs == nil {
+		mmCreateWithSlots.defaultExpectation.paramPtrs = &ScheduleRepositoryMockCreateWithSlotsParamPtrs{}
 	}
-	mmCreate.defaultExpectation.paramPtrs.schedule = &schedule
-	mmCreate.defaultExpectation.expectationOrigins.originSchedule = minimock.CallerInfo(1)
+	mmCreateWithSlots.defaultExpectation.paramPtrs.schedule = &schedule
+	mmCreateWithSlots.defaultExpectation.expectationOrigins.originSchedule = minimock.CallerInfo(1)
 
-	return mmCreate
+	return mmCreateWithSlots
 }
 
-// Inspect accepts an inspector function that has same arguments as the ScheduleRepository.Create
-func (mmCreate *mScheduleRepositoryMockCreate) Inspect(f func(ctx context.Context, schedule domain.Schedule)) *mScheduleRepositoryMockCreate {
-	if mmCreate.mock.inspectFuncCreate != nil {
-		mmCreate.mock.t.Fatalf("Inspect function is already set for ScheduleRepositoryMock.Create")
+// ExpectSlotsParam3 sets up expected param slots for ScheduleRepository.CreateWithSlots
+func (mmCreateWithSlots *mScheduleRepositoryMockCreateWithSlots) ExpectSlotsParam3(slots []domain.Slot) *mScheduleRepositoryMockCreateWithSlots {
+	if mmCreateWithSlots.mock.funcCreateWithSlots != nil {
+		mmCreateWithSlots.mock.t.Fatalf("ScheduleRepositoryMock.CreateWithSlots mock is already set by Set")
 	}
 
-	mmCreate.mock.inspectFuncCreate = f
+	if mmCreateWithSlots.defaultExpectation == nil {
+		mmCreateWithSlots.defaultExpectation = &ScheduleRepositoryMockCreateWithSlotsExpectation{}
+	}
 
-	return mmCreate
+	if mmCreateWithSlots.defaultExpectation.params != nil {
+		mmCreateWithSlots.mock.t.Fatalf("ScheduleRepositoryMock.CreateWithSlots mock is already set by Expect")
+	}
+
+	if mmCreateWithSlots.defaultExpectation.paramPtrs == nil {
+		mmCreateWithSlots.defaultExpectation.paramPtrs = &ScheduleRepositoryMockCreateWithSlotsParamPtrs{}
+	}
+	mmCreateWithSlots.defaultExpectation.paramPtrs.slots = &slots
+	mmCreateWithSlots.defaultExpectation.expectationOrigins.originSlots = minimock.CallerInfo(1)
+
+	return mmCreateWithSlots
 }
 
-// Return sets up results that will be returned by ScheduleRepository.Create
-func (mmCreate *mScheduleRepositoryMockCreate) Return(s1 domain.Schedule, err error) *ScheduleRepositoryMock {
-	if mmCreate.mock.funcCreate != nil {
-		mmCreate.mock.t.Fatalf("ScheduleRepositoryMock.Create mock is already set by Set")
+// Inspect accepts an inspector function that has same arguments as the ScheduleRepository.CreateWithSlots
+func (mmCreateWithSlots *mScheduleRepositoryMockCreateWithSlots) Inspect(f func(ctx context.Context, schedule domain.Schedule, slots []domain.Slot)) *mScheduleRepositoryMockCreateWithSlots {
+	if mmCreateWithSlots.mock.inspectFuncCreateWithSlots != nil {
+		mmCreateWithSlots.mock.t.Fatalf("Inspect function is already set for ScheduleRepositoryMock.CreateWithSlots")
 	}
 
-	if mmCreate.defaultExpectation == nil {
-		mmCreate.defaultExpectation = &ScheduleRepositoryMockCreateExpectation{mock: mmCreate.mock}
-	}
-	mmCreate.defaultExpectation.results = &ScheduleRepositoryMockCreateResults{s1, err}
-	mmCreate.defaultExpectation.returnOrigin = minimock.CallerInfo(1)
-	return mmCreate.mock
+	mmCreateWithSlots.mock.inspectFuncCreateWithSlots = f
+
+	return mmCreateWithSlots
 }
 
-// Set uses given function f to mock the ScheduleRepository.Create method
-func (mmCreate *mScheduleRepositoryMockCreate) Set(f func(ctx context.Context, schedule domain.Schedule) (s1 domain.Schedule, err error)) *ScheduleRepositoryMock {
-	if mmCreate.defaultExpectation != nil {
-		mmCreate.mock.t.Fatalf("Default expectation is already set for the ScheduleRepository.Create method")
+// Return sets up results that will be returned by ScheduleRepository.CreateWithSlots
+func (mmCreateWithSlots *mScheduleRepositoryMockCreateWithSlots) Return(s1 domain.Schedule, err error) *ScheduleRepositoryMock {
+	if mmCreateWithSlots.mock.funcCreateWithSlots != nil {
+		mmCreateWithSlots.mock.t.Fatalf("ScheduleRepositoryMock.CreateWithSlots mock is already set by Set")
 	}
 
-	if len(mmCreate.expectations) > 0 {
-		mmCreate.mock.t.Fatalf("Some expectations are already set for the ScheduleRepository.Create method")
+	if mmCreateWithSlots.defaultExpectation == nil {
+		mmCreateWithSlots.defaultExpectation = &ScheduleRepositoryMockCreateWithSlotsExpectation{mock: mmCreateWithSlots.mock}
 	}
-
-	mmCreate.mock.funcCreate = f
-	mmCreate.mock.funcCreateOrigin = minimock.CallerInfo(1)
-	return mmCreate.mock
+	mmCreateWithSlots.defaultExpectation.results = &ScheduleRepositoryMockCreateWithSlotsResults{s1, err}
+	mmCreateWithSlots.defaultExpectation.returnOrigin = minimock.CallerInfo(1)
+	return mmCreateWithSlots.mock
 }
 
-// When sets expectation for the ScheduleRepository.Create which will trigger the result defined by the following
+// Set uses given function f to mock the ScheduleRepository.CreateWithSlots method
+func (mmCreateWithSlots *mScheduleRepositoryMockCreateWithSlots) Set(f func(ctx context.Context, schedule domain.Schedule, slots []domain.Slot) (s1 domain.Schedule, err error)) *ScheduleRepositoryMock {
+	if mmCreateWithSlots.defaultExpectation != nil {
+		mmCreateWithSlots.mock.t.Fatalf("Default expectation is already set for the ScheduleRepository.CreateWithSlots method")
+	}
+
+	if len(mmCreateWithSlots.expectations) > 0 {
+		mmCreateWithSlots.mock.t.Fatalf("Some expectations are already set for the ScheduleRepository.CreateWithSlots method")
+	}
+
+	mmCreateWithSlots.mock.funcCreateWithSlots = f
+	mmCreateWithSlots.mock.funcCreateWithSlotsOrigin = minimock.CallerInfo(1)
+	return mmCreateWithSlots.mock
+}
+
+// When sets expectation for the ScheduleRepository.CreateWithSlots which will trigger the result defined by the following
 // Then helper
-func (mmCreate *mScheduleRepositoryMockCreate) When(ctx context.Context, schedule domain.Schedule) *ScheduleRepositoryMockCreateExpectation {
-	if mmCreate.mock.funcCreate != nil {
-		mmCreate.mock.t.Fatalf("ScheduleRepositoryMock.Create mock is already set by Set")
+func (mmCreateWithSlots *mScheduleRepositoryMockCreateWithSlots) When(ctx context.Context, schedule domain.Schedule, slots []domain.Slot) *ScheduleRepositoryMockCreateWithSlotsExpectation {
+	if mmCreateWithSlots.mock.funcCreateWithSlots != nil {
+		mmCreateWithSlots.mock.t.Fatalf("ScheduleRepositoryMock.CreateWithSlots mock is already set by Set")
 	}
 
-	expectation := &ScheduleRepositoryMockCreateExpectation{
-		mock:               mmCreate.mock,
-		params:             &ScheduleRepositoryMockCreateParams{ctx, schedule},
-		expectationOrigins: ScheduleRepositoryMockCreateExpectationOrigins{origin: minimock.CallerInfo(1)},
+	expectation := &ScheduleRepositoryMockCreateWithSlotsExpectation{
+		mock:               mmCreateWithSlots.mock,
+		params:             &ScheduleRepositoryMockCreateWithSlotsParams{ctx, schedule, slots},
+		expectationOrigins: ScheduleRepositoryMockCreateWithSlotsExpectationOrigins{origin: minimock.CallerInfo(1)},
 	}
-	mmCreate.expectations = append(mmCreate.expectations, expectation)
+	mmCreateWithSlots.expectations = append(mmCreateWithSlots.expectations, expectation)
 	return expectation
 }
 
-// Then sets up ScheduleRepository.Create return parameters for the expectation previously defined by the When method
-func (e *ScheduleRepositoryMockCreateExpectation) Then(s1 domain.Schedule, err error) *ScheduleRepositoryMock {
-	e.results = &ScheduleRepositoryMockCreateResults{s1, err}
+// Then sets up ScheduleRepository.CreateWithSlots return parameters for the expectation previously defined by the When method
+func (e *ScheduleRepositoryMockCreateWithSlotsExpectation) Then(s1 domain.Schedule, err error) *ScheduleRepositoryMock {
+	e.results = &ScheduleRepositoryMockCreateWithSlotsResults{s1, err}
 	return e.mock
 }
 
-// Times sets number of times ScheduleRepository.Create should be invoked
-func (mmCreate *mScheduleRepositoryMockCreate) Times(n uint64) *mScheduleRepositoryMockCreate {
+// Times sets number of times ScheduleRepository.CreateWithSlots should be invoked
+func (mmCreateWithSlots *mScheduleRepositoryMockCreateWithSlots) Times(n uint64) *mScheduleRepositoryMockCreateWithSlots {
 	if n == 0 {
-		mmCreate.mock.t.Fatalf("Times of ScheduleRepositoryMock.Create mock can not be zero")
+		mmCreateWithSlots.mock.t.Fatalf("Times of ScheduleRepositoryMock.CreateWithSlots mock can not be zero")
 	}
-	mm_atomic.StoreUint64(&mmCreate.expectedInvocations, n)
-	mmCreate.expectedInvocationsOrigin = minimock.CallerInfo(1)
-	return mmCreate
+	mm_atomic.StoreUint64(&mmCreateWithSlots.expectedInvocations, n)
+	mmCreateWithSlots.expectedInvocationsOrigin = minimock.CallerInfo(1)
+	return mmCreateWithSlots
 }
 
-func (mmCreate *mScheduleRepositoryMockCreate) invocationsDone() bool {
-	if len(mmCreate.expectations) == 0 && mmCreate.defaultExpectation == nil && mmCreate.mock.funcCreate == nil {
+func (mmCreateWithSlots *mScheduleRepositoryMockCreateWithSlots) invocationsDone() bool {
+	if len(mmCreateWithSlots.expectations) == 0 && mmCreateWithSlots.defaultExpectation == nil && mmCreateWithSlots.mock.funcCreateWithSlots == nil {
 		return true
 	}
 
-	totalInvocations := mm_atomic.LoadUint64(&mmCreate.mock.afterCreateCounter)
-	expectedInvocations := mm_atomic.LoadUint64(&mmCreate.expectedInvocations)
+	totalInvocations := mm_atomic.LoadUint64(&mmCreateWithSlots.mock.afterCreateWithSlotsCounter)
+	expectedInvocations := mm_atomic.LoadUint64(&mmCreateWithSlots.expectedInvocations)
 
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// Create implements mm_repository.ScheduleRepository
-func (mmCreate *ScheduleRepositoryMock) Create(ctx context.Context, schedule domain.Schedule) (s1 domain.Schedule, err error) {
-	mm_atomic.AddUint64(&mmCreate.beforeCreateCounter, 1)
-	defer mm_atomic.AddUint64(&mmCreate.afterCreateCounter, 1)
+// CreateWithSlots implements mm_repository.ScheduleRepository
+func (mmCreateWithSlots *ScheduleRepositoryMock) CreateWithSlots(ctx context.Context, schedule domain.Schedule, slots []domain.Slot) (s1 domain.Schedule, err error) {
+	mm_atomic.AddUint64(&mmCreateWithSlots.beforeCreateWithSlotsCounter, 1)
+	defer mm_atomic.AddUint64(&mmCreateWithSlots.afterCreateWithSlotsCounter, 1)
 
-	mmCreate.t.Helper()
+	mmCreateWithSlots.t.Helper()
 
-	if mmCreate.inspectFuncCreate != nil {
-		mmCreate.inspectFuncCreate(ctx, schedule)
+	if mmCreateWithSlots.inspectFuncCreateWithSlots != nil {
+		mmCreateWithSlots.inspectFuncCreateWithSlots(ctx, schedule, slots)
 	}
 
-	mm_params := ScheduleRepositoryMockCreateParams{ctx, schedule}
+	mm_params := ScheduleRepositoryMockCreateWithSlotsParams{ctx, schedule, slots}
 
 	// Record call args
-	mmCreate.CreateMock.mutex.Lock()
-	mmCreate.CreateMock.callArgs = append(mmCreate.CreateMock.callArgs, &mm_params)
-	mmCreate.CreateMock.mutex.Unlock()
+	mmCreateWithSlots.CreateWithSlotsMock.mutex.Lock()
+	mmCreateWithSlots.CreateWithSlotsMock.callArgs = append(mmCreateWithSlots.CreateWithSlotsMock.callArgs, &mm_params)
+	mmCreateWithSlots.CreateWithSlotsMock.mutex.Unlock()
 
-	for _, e := range mmCreate.CreateMock.expectations {
+	for _, e := range mmCreateWithSlots.CreateWithSlotsMock.expectations {
 		if minimock.Equal(*e.params, mm_params) {
 			mm_atomic.AddUint64(&e.Counter, 1)
 			return e.results.s1, e.results.err
 		}
 	}
 
-	if mmCreate.CreateMock.defaultExpectation != nil {
-		mm_atomic.AddUint64(&mmCreate.CreateMock.defaultExpectation.Counter, 1)
-		mm_want := mmCreate.CreateMock.defaultExpectation.params
-		mm_want_ptrs := mmCreate.CreateMock.defaultExpectation.paramPtrs
+	if mmCreateWithSlots.CreateWithSlotsMock.defaultExpectation != nil {
+		mm_atomic.AddUint64(&mmCreateWithSlots.CreateWithSlotsMock.defaultExpectation.Counter, 1)
+		mm_want := mmCreateWithSlots.CreateWithSlotsMock.defaultExpectation.params
+		mm_want_ptrs := mmCreateWithSlots.CreateWithSlotsMock.defaultExpectation.paramPtrs
 
-		mm_got := ScheduleRepositoryMockCreateParams{ctx, schedule}
+		mm_got := ScheduleRepositoryMockCreateWithSlotsParams{ctx, schedule, slots}
 
 		if mm_want_ptrs != nil {
 
 			if mm_want_ptrs.ctx != nil && !minimock.Equal(*mm_want_ptrs.ctx, mm_got.ctx) {
-				mmCreate.t.Errorf("ScheduleRepositoryMock.Create got unexpected parameter ctx, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
-					mmCreate.CreateMock.defaultExpectation.expectationOrigins.originCtx, *mm_want_ptrs.ctx, mm_got.ctx, minimock.Diff(*mm_want_ptrs.ctx, mm_got.ctx))
+				mmCreateWithSlots.t.Errorf("ScheduleRepositoryMock.CreateWithSlots got unexpected parameter ctx, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+					mmCreateWithSlots.CreateWithSlotsMock.defaultExpectation.expectationOrigins.originCtx, *mm_want_ptrs.ctx, mm_got.ctx, minimock.Diff(*mm_want_ptrs.ctx, mm_got.ctx))
 			}
 
 			if mm_want_ptrs.schedule != nil && !minimock.Equal(*mm_want_ptrs.schedule, mm_got.schedule) {
-				mmCreate.t.Errorf("ScheduleRepositoryMock.Create got unexpected parameter schedule, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
-					mmCreate.CreateMock.defaultExpectation.expectationOrigins.originSchedule, *mm_want_ptrs.schedule, mm_got.schedule, minimock.Diff(*mm_want_ptrs.schedule, mm_got.schedule))
+				mmCreateWithSlots.t.Errorf("ScheduleRepositoryMock.CreateWithSlots got unexpected parameter schedule, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+					mmCreateWithSlots.CreateWithSlotsMock.defaultExpectation.expectationOrigins.originSchedule, *mm_want_ptrs.schedule, mm_got.schedule, minimock.Diff(*mm_want_ptrs.schedule, mm_got.schedule))
+			}
+
+			if mm_want_ptrs.slots != nil && !minimock.Equal(*mm_want_ptrs.slots, mm_got.slots) {
+				mmCreateWithSlots.t.Errorf("ScheduleRepositoryMock.CreateWithSlots got unexpected parameter slots, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+					mmCreateWithSlots.CreateWithSlotsMock.defaultExpectation.expectationOrigins.originSlots, *mm_want_ptrs.slots, mm_got.slots, minimock.Diff(*mm_want_ptrs.slots, mm_got.slots))
 			}
 
 		} else if mm_want != nil && !minimock.Equal(*mm_want, mm_got) {
-			mmCreate.t.Errorf("ScheduleRepositoryMock.Create got unexpected parameters, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
-				mmCreate.CreateMock.defaultExpectation.expectationOrigins.origin, *mm_want, mm_got, minimock.Diff(*mm_want, mm_got))
+			mmCreateWithSlots.t.Errorf("ScheduleRepositoryMock.CreateWithSlots got unexpected parameters, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+				mmCreateWithSlots.CreateWithSlotsMock.defaultExpectation.expectationOrigins.origin, *mm_want, mm_got, minimock.Diff(*mm_want, mm_got))
 		}
 
-		mm_results := mmCreate.CreateMock.defaultExpectation.results
+		mm_results := mmCreateWithSlots.CreateWithSlotsMock.defaultExpectation.results
 		if mm_results == nil {
-			mmCreate.t.Fatal("No results are set for the ScheduleRepositoryMock.Create")
+			mmCreateWithSlots.t.Fatal("No results are set for the ScheduleRepositoryMock.CreateWithSlots")
 		}
 		return (*mm_results).s1, (*mm_results).err
 	}
-	if mmCreate.funcCreate != nil {
-		return mmCreate.funcCreate(ctx, schedule)
+	if mmCreateWithSlots.funcCreateWithSlots != nil {
+		return mmCreateWithSlots.funcCreateWithSlots(ctx, schedule, slots)
 	}
-	mmCreate.t.Fatalf("Unexpected call to ScheduleRepositoryMock.Create. %v %v", ctx, schedule)
+	mmCreateWithSlots.t.Fatalf("Unexpected call to ScheduleRepositoryMock.CreateWithSlots. %v %v %v", ctx, schedule, slots)
 	return
 }
 
-// CreateAfterCounter returns a count of finished ScheduleRepositoryMock.Create invocations
-func (mmCreate *ScheduleRepositoryMock) CreateAfterCounter() uint64 {
-	return mm_atomic.LoadUint64(&mmCreate.afterCreateCounter)
+// CreateWithSlotsAfterCounter returns a count of finished ScheduleRepositoryMock.CreateWithSlots invocations
+func (mmCreateWithSlots *ScheduleRepositoryMock) CreateWithSlotsAfterCounter() uint64 {
+	return mm_atomic.LoadUint64(&mmCreateWithSlots.afterCreateWithSlotsCounter)
 }
 
-// CreateBeforeCounter returns a count of ScheduleRepositoryMock.Create invocations
-func (mmCreate *ScheduleRepositoryMock) CreateBeforeCounter() uint64 {
-	return mm_atomic.LoadUint64(&mmCreate.beforeCreateCounter)
+// CreateWithSlotsBeforeCounter returns a count of ScheduleRepositoryMock.CreateWithSlots invocations
+func (mmCreateWithSlots *ScheduleRepositoryMock) CreateWithSlotsBeforeCounter() uint64 {
+	return mm_atomic.LoadUint64(&mmCreateWithSlots.beforeCreateWithSlotsCounter)
 }
 
-// Calls returns a list of arguments used in each call to ScheduleRepositoryMock.Create.
+// Calls returns a list of arguments used in each call to ScheduleRepositoryMock.CreateWithSlots.
 // The list is in the same order as the calls were made (i.e. recent calls have a higher index)
-func (mmCreate *mScheduleRepositoryMockCreate) Calls() []*ScheduleRepositoryMockCreateParams {
-	mmCreate.mutex.RLock()
+func (mmCreateWithSlots *mScheduleRepositoryMockCreateWithSlots) Calls() []*ScheduleRepositoryMockCreateWithSlotsParams {
+	mmCreateWithSlots.mutex.RLock()
 
-	argCopy := make([]*ScheduleRepositoryMockCreateParams, len(mmCreate.callArgs))
-	copy(argCopy, mmCreate.callArgs)
+	argCopy := make([]*ScheduleRepositoryMockCreateWithSlotsParams, len(mmCreateWithSlots.callArgs))
+	copy(argCopy, mmCreateWithSlots.callArgs)
 
-	mmCreate.mutex.RUnlock()
+	mmCreateWithSlots.mutex.RUnlock()
 
 	return argCopy
 }
 
-// MinimockCreateDone returns true if the count of the Create invocations corresponds
+// MinimockCreateWithSlotsDone returns true if the count of the CreateWithSlots invocations corresponds
 // the number of defined expectations
-func (m *ScheduleRepositoryMock) MinimockCreateDone() bool {
-	if m.CreateMock.optional {
+func (m *ScheduleRepositoryMock) MinimockCreateWithSlotsDone() bool {
+	if m.CreateWithSlotsMock.optional {
 		// Optional methods provide '0 or more' call count restriction.
 		return true
 	}
 
-	for _, e := range m.CreateMock.expectations {
+	for _, e := range m.CreateWithSlotsMock.expectations {
 		if mm_atomic.LoadUint64(&e.Counter) < 1 {
 			return false
 		}
 	}
 
-	return m.CreateMock.invocationsDone()
+	return m.CreateWithSlotsMock.invocationsDone()
 }
 
-// MinimockCreateInspect logs each unmet expectation
-func (m *ScheduleRepositoryMock) MinimockCreateInspect() {
-	for _, e := range m.CreateMock.expectations {
+// MinimockCreateWithSlotsInspect logs each unmet expectation
+func (m *ScheduleRepositoryMock) MinimockCreateWithSlotsInspect() {
+	for _, e := range m.CreateWithSlotsMock.expectations {
 		if mm_atomic.LoadUint64(&e.Counter) < 1 {
-			m.t.Errorf("Expected call to ScheduleRepositoryMock.Create at\n%s with params: %#v", e.expectationOrigins.origin, *e.params)
+			m.t.Errorf("Expected call to ScheduleRepositoryMock.CreateWithSlots at\n%s with params: %#v", e.expectationOrigins.origin, *e.params)
 		}
 	}
 
-	afterCreateCounter := mm_atomic.LoadUint64(&m.afterCreateCounter)
+	afterCreateWithSlotsCounter := mm_atomic.LoadUint64(&m.afterCreateWithSlotsCounter)
 	// if default expectation was set then invocations count should be greater than zero
-	if m.CreateMock.defaultExpectation != nil && afterCreateCounter < 1 {
-		if m.CreateMock.defaultExpectation.params == nil {
-			m.t.Errorf("Expected call to ScheduleRepositoryMock.Create at\n%s", m.CreateMock.defaultExpectation.returnOrigin)
+	if m.CreateWithSlotsMock.defaultExpectation != nil && afterCreateWithSlotsCounter < 1 {
+		if m.CreateWithSlotsMock.defaultExpectation.params == nil {
+			m.t.Errorf("Expected call to ScheduleRepositoryMock.CreateWithSlots at\n%s", m.CreateWithSlotsMock.defaultExpectation.returnOrigin)
 		} else {
-			m.t.Errorf("Expected call to ScheduleRepositoryMock.Create at\n%s with params: %#v", m.CreateMock.defaultExpectation.expectationOrigins.origin, *m.CreateMock.defaultExpectation.params)
+			m.t.Errorf("Expected call to ScheduleRepositoryMock.CreateWithSlots at\n%s with params: %#v", m.CreateWithSlotsMock.defaultExpectation.expectationOrigins.origin, *m.CreateWithSlotsMock.defaultExpectation.params)
 		}
 	}
 	// if func was set then invocations count should be greater than zero
-	if m.funcCreate != nil && afterCreateCounter < 1 {
-		m.t.Errorf("Expected call to ScheduleRepositoryMock.Create at\n%s", m.funcCreateOrigin)
+	if m.funcCreateWithSlots != nil && afterCreateWithSlotsCounter < 1 {
+		m.t.Errorf("Expected call to ScheduleRepositoryMock.CreateWithSlots at\n%s", m.funcCreateWithSlotsOrigin)
 	}
 
-	if !m.CreateMock.invocationsDone() && afterCreateCounter > 0 {
-		m.t.Errorf("Expected %d calls to ScheduleRepositoryMock.Create at\n%s but found %d calls",
-			mm_atomic.LoadUint64(&m.CreateMock.expectedInvocations), m.CreateMock.expectedInvocationsOrigin, afterCreateCounter)
+	if !m.CreateWithSlotsMock.invocationsDone() && afterCreateWithSlotsCounter > 0 {
+		m.t.Errorf("Expected %d calls to ScheduleRepositoryMock.CreateWithSlots at\n%s but found %d calls",
+			mm_atomic.LoadUint64(&m.CreateWithSlotsMock.expectedInvocations), m.CreateWithSlotsMock.expectedInvocationsOrigin, afterCreateWithSlotsCounter)
 	}
 }
 
@@ -743,7 +774,7 @@ func (m *ScheduleRepositoryMock) MinimockGetByRoomIDInspect() {
 func (m *ScheduleRepositoryMock) MinimockFinish() {
 	m.finishOnce.Do(func() {
 		if !m.minimockDone() {
-			m.MinimockCreateInspect()
+			m.MinimockCreateWithSlotsInspect()
 
 			m.MinimockGetByRoomIDInspect()
 		}
@@ -769,6 +800,6 @@ func (m *ScheduleRepositoryMock) MinimockWait(timeout mm_time.Duration) {
 func (m *ScheduleRepositoryMock) minimockDone() bool {
 	done := true
 	return done &&
-		m.MinimockCreateDone() &&
+		m.MinimockCreateWithSlotsDone() &&
 		m.MinimockGetByRoomIDDone()
 }
