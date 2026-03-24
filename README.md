@@ -80,3 +80,5 @@ k6 run -e BASE_URL=http://localhost:8080 \
        -e TOKEN=<jwt> \
        deploy/k6/slots.js
 ```
+
+Отчет лежит в `load-test-nodes.md`

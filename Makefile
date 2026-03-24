@@ -34,6 +34,7 @@ down:
 logs:
 	docker compose logs -f app
 
+# Наполнение базы тестовыми данными
 seed:
 	go run ./cmd/room-booking-service seed
 
@@ -70,5 +71,7 @@ run:
 
 fmt:
 	gofmt -w ./cmd ./internal ./tests
+
+
 
 .PHONY: up down logs seed test test-e2e lint swagger run fmt

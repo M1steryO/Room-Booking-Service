@@ -306,6 +306,4 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-!/local.env
-!/bin/
-!/.postman/
+
