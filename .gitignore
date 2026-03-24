@@ -7,10 +7,10 @@ bin/
 docs/
 /coverage.out
 !/.idea/
-/bin/
-/local.env
-/.postman/
-/postman/
+bin
+local.env
+.postman
+postman
 
 
 
