@@ -6,9 +6,14 @@ import (
 
 	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
 	"github.com/avito-internships/test-backend-1-M1steryO/internal/usecase/schedules/helpers"
+	"github.com/google/uuid"
 )
 
 func (u *SlotsUsecase) ListAvailable(ctx context.Context, roomID string, date time.Time) ([]domain.Slot, error) {
+	if _, err := uuid.Parse(roomID); err != nil {
+		return nil, domain.InvalidRequest("invalid room_id")
+	}
+
 	if _, err := u.roomsRepo.GetByID(ctx, roomID); err != nil {
 		return nil, err
 	}

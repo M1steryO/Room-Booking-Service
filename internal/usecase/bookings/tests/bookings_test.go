@@ -19,6 +19,11 @@ type conferenceStub struct {
 	createFn func(ctx context.Context, bookingID string) (string, error)
 }
 
+const (
+	validSlotID    = "11111111-1111-1111-1111-111111111111"
+	validBookingID = "22222222-2222-2222-2222-222222222222"
+)
+
 func (s conferenceStub) CreateLink(ctx context.Context, bookingID string) (string, error) {
 	return s.createFn(ctx, bookingID)
 }
@@ -53,7 +58,7 @@ func TestCreatePastSlotRejected(t *testing.T) {
 	slotsRepo := repmocks.NewSlotRepositoryMock(t)
 	bookingsRepo := repmocks.NewBookingRepositoryMock(t)
 	slotsRepo.GetByIDMock.Set(func(_ context.Context, _ string) (domain.Slot, error) {
-		return domain.Slot{ID: "s1", Start: now.Add(-time.Hour)}, nil
+		return domain.Slot{ID: validSlotID, Start: now.Add(-time.Hour)}, nil
 	})
 	slotsRepo.BulkUpsertMock.Optional()
 	slotsRepo.DateHasSlotsMock.Optional()
@@ -70,7 +75,32 @@ func TestCreatePastSlotRejected(t *testing.T) {
 		fixedClock{now: now},
 	)
 
-	_, err := uc.Create(context.Background(), "u1", domain.RoleUser, "s1", false)
+	_, err := uc.Create(context.Background(), "u1", domain.RoleUser, validSlotID, false)
+	if err == nil || domain.AsAppError(err).Code != "INVALID_REQUEST" {
+		t.Fatalf("expected INVALID_REQUEST, got %v", err)
+	}
+}
+
+func TestCreateInvalidSlotID(t *testing.T) {
+	slotsRepo := repmocks.NewSlotRepositoryMock(t)
+	bookingsRepo := repmocks.NewBookingRepositoryMock(t)
+	slotsRepo.GetByIDMock.Optional()
+	slotsRepo.BulkUpsertMock.Optional()
+	slotsRepo.DateHasSlotsMock.Optional()
+	slotsRepo.ListAvailableByRoomAndDateMock.Optional()
+	bookingsRepo.CreateMock.Optional()
+	bookingsRepo.ListAllMock.Optional()
+	bookingsRepo.ListByUserMock.Optional()
+	bookingsRepo.CancelByOwnerMock.Optional()
+	bookingsRepo.GetByIDMock.Optional()
+	uc := bookingsuc.NewBookingsUsecase(
+		slotsRepo,
+		bookingsRepo,
+		conferenceStub{createFn: func(_ context.Context, _ string) (string, error) { return "", nil }},
+		fixedClock{now: time.Now().UTC()},
+	)
+
+	_, err := uc.Create(context.Background(), "u1", domain.RoleUser, "not-a-uuid", false)
 	if err == nil || domain.AsAppError(err).Code != "INVALID_REQUEST" {
 		t.Fatalf("expected INVALID_REQUEST, got %v", err)
 	}
@@ -85,7 +115,7 @@ func TestCreateSuccessWithoutConferenceLink(t *testing.T) {
 
 	slotsRepo.GetByIDMock.Set(func(_ context.Context, _ string) (domain.Slot, error) {
 		return domain.Slot{
-			ID:        "s1",
+			ID:        validSlotID,
 			RoomID:    "r1",
 			Start:     now.Add(time.Hour),
 			End:       now.Add(2 * time.Hour),
@@ -115,12 +145,12 @@ func TestCreateSuccessWithoutConferenceLink(t *testing.T) {
 		fixedClock{now: now},
 	)
 
-	created, err := uc.Create(context.Background(), "u1", domain.RoleUser, "s1", false)
+	created, err := uc.Create(context.Background(), "u1", domain.RoleUser, validSlotID, false)
 	if err != nil {
 		t.Fatalf("Create error: %v", err)
 	}
 
-	if captured.UserID != "u1" || captured.SlotID != "s1" || captured.RoomID != "r1" {
+	if captured.UserID != "u1" || captured.SlotID != validSlotID || captured.RoomID != "r1" {
 		t.Fatalf("unexpected booking fields: %+v", captured)
 	}
 	if captured.Status != domain.BookingStatusActive {
@@ -146,7 +176,7 @@ func TestCreateSuccessWithConferenceLink(t *testing.T) {
 
 	slotsRepo.GetByIDMock.Set(func(_ context.Context, _ string) (domain.Slot, error) {
 		return domain.Slot{
-			ID:     "s1",
+			ID:     validSlotID,
 			RoomID: "r1",
 			Start:  now.Add(time.Hour),
 			End:    now.Add(2 * time.Hour),
@@ -177,7 +207,7 @@ func TestCreateSuccessWithConferenceLink(t *testing.T) {
 		fixedClock{now: now},
 	)
 
-	_, err := uc.Create(context.Background(), "u1", domain.RoleUser, "s1", true)
+	_, err := uc.Create(context.Background(), "u1", domain.RoleUser, validSlotID, true)
 	if err != nil {
 		t.Fatalf("Create error: %v", err)
 	}
@@ -195,7 +225,7 @@ func TestCreateConferenceLinkError(t *testing.T) {
 
 	slotsRepo.GetByIDMock.Set(func(_ context.Context, _ string) (domain.Slot, error) {
 		return domain.Slot{
-			ID:     "s1",
+			ID:     validSlotID,
 			RoomID: "r1",
 			Start:  now.Add(time.Hour),
 			End:    now.Add(2 * time.Hour),
@@ -223,7 +253,7 @@ func TestCreateConferenceLinkError(t *testing.T) {
 		fixedClock{now: now},
 	)
 
-	_, err := uc.Create(context.Background(), "u1", domain.RoleUser, "s1", true)
+	_, err := uc.Create(context.Background(), "u1", domain.RoleUser, validSlotID, true)
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -250,7 +280,7 @@ func TestCancelDelegates(t *testing.T) {
 		return domain.Booking{ID: bookingID, UserID: "u1"}, nil
 	})
 	bookingsRepo.CancelByOwnerMock.Set(func(_ context.Context, bookingID, userID string) error {
-		called = bookingID == "b1" && userID == "u1"
+		called = bookingID == validBookingID && userID == "u1"
 		return nil
 	})
 	bookingsRepo.CreateMock.Optional()
@@ -263,7 +293,7 @@ func TestCancelDelegates(t *testing.T) {
 		fixedClock{now: time.Now().UTC()},
 	)
 
-	_, err := uc.Cancel(context.Background(), "u1", domain.RoleUser, "b1")
+	_, err := uc.Cancel(context.Background(), "u1", domain.RoleUser, validBookingID)
 	if err != nil {
 		t.Fatalf("Cancel error: %v", err)
 	}
@@ -295,7 +325,7 @@ func TestCancelForeignBookingForbidden(t *testing.T) {
 		fixedClock{now: time.Now().UTC()},
 	)
 
-	_, err := uc.Cancel(context.Background(), "u1", domain.RoleUser, "b1")
+	_, err := uc.Cancel(context.Background(), "u1", domain.RoleUser, validBookingID)
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -330,12 +360,39 @@ func TestCancelRepoError(t *testing.T) {
 		fixedClock{now: time.Now().UTC()},
 	)
 
-	_, err := uc.Cancel(context.Background(), "u1", domain.RoleUser, "b1")
+	_, err := uc.Cancel(context.Background(), "u1", domain.RoleUser, validBookingID)
 	if err == nil {
 		t.Fatal("expected error")
 	}
 	if !errors.Is(err, repoErr) {
 		t.Fatalf("expected repo error, got %v", err)
+	}
+}
+
+func TestCancelInvalidBookingID(t *testing.T) {
+	slotsRepo := repmocks.NewSlotRepositoryMock(t)
+	bookingsRepo := repmocks.NewBookingRepositoryMock(t)
+
+	slotsRepo.GetByIDMock.Optional()
+	slotsRepo.BulkUpsertMock.Optional()
+	slotsRepo.DateHasSlotsMock.Optional()
+	slotsRepo.ListAvailableByRoomAndDateMock.Optional()
+	bookingsRepo.CreateMock.Optional()
+	bookingsRepo.ListAllMock.Optional()
+	bookingsRepo.ListByUserMock.Optional()
+	bookingsRepo.GetByIDMock.Optional()
+	bookingsRepo.CancelByOwnerMock.Optional()
+
+	uc := bookingsuc.NewBookingsUsecase(
+		slotsRepo,
+		bookingsRepo,
+		conferenceStub{createFn: func(_ context.Context, _ string) (string, error) { return "", nil }},
+		fixedClock{now: time.Now().UTC()},
+	)
+
+	_, err := uc.Cancel(context.Background(), "u1", domain.RoleUser, "bad-id")
+	if err == nil || domain.AsAppError(err).Code != "INVALID_REQUEST" {
+		t.Fatalf("expected INVALID_REQUEST, got %v", err)
 	}
 }
 

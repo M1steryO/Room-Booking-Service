@@ -6,11 +6,15 @@ import (
 	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
 	"github.com/avito-internships/test-backend-1-M1steryO/internal/usecase/schedules/helpers"
 	"github.com/avito-internships/test-backend-1-M1steryO/pkg/identity"
+	"github.com/google/uuid"
 )
 
 func (u *SchedulesUsecase) Create(ctx context.Context, actorRole domain.Role, roomID string, days []int, startTime string, endTime string) (domain.Schedule, error) {
 	if actorRole != domain.RoleAdmin {
 		return domain.Schedule{}, domain.Forbidden("admin role required")
+	}
+	if _, err := uuid.Parse(roomID); err != nil {
+		return domain.Schedule{}, domain.InvalidRequest("invalid room_id")
 	}
 
 	if _, err := u.roomsRepo.GetByID(ctx, roomID); err != nil {

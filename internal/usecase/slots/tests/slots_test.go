@@ -10,11 +10,13 @@ import (
 	slotsuc "github.com/avito-internships/test-backend-1-M1steryO/internal/usecase/slots"
 )
 
+const validRoomID = "33333333-3333-3333-3333-333333333333"
+
 func TestListAvailableNoScheduleReturnsEmpty(t *testing.T) {
 	roomsRepo := repmocks.NewRoomRepositoryMock(t)
 	schedulesRepo := repmocks.NewScheduleRepositoryMock(t)
 	slotsRepo := repmocks.NewSlotRepositoryMock(t)
-	roomsRepo.GetByIDMock.Set(func(_ context.Context, _ string) (domain.Room, error) { return domain.Room{ID: "r1"}, nil })
+	roomsRepo.GetByIDMock.Set(func(_ context.Context, _ string) (domain.Room, error) { return domain.Room{ID: validRoomID}, nil })
 	schedulesRepo.GetByRoomIDMock.Set(func(_ context.Context, _ string) (domain.Schedule, error) {
 		return domain.Schedule{}, domain.NotFound("schedule not found")
 	})
@@ -27,7 +29,7 @@ func TestListAvailableNoScheduleReturnsEmpty(t *testing.T) {
 	schedulesRepo.CreateWithSlotsMock.Optional()
 	uc := slotsuc.NewSlotsUsecase(roomsRepo, schedulesRepo, slotsRepo)
 
-	got, err := uc.ListAvailable(context.Background(), "r1", time.Now().UTC())
+	got, err := uc.ListAvailable(context.Background(), validRoomID, time.Now().UTC())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -41,9 +43,9 @@ func TestListAvailableGeneratesWhenMissing(t *testing.T) {
 	roomsRepo := repmocks.NewRoomRepositoryMock(t)
 	schedulesRepo := repmocks.NewScheduleRepositoryMock(t)
 	slotsRepo := repmocks.NewSlotRepositoryMock(t)
-	roomsRepo.GetByIDMock.Set(func(_ context.Context, _ string) (domain.Room, error) { return domain.Room{ID: "r1"}, nil })
+	roomsRepo.GetByIDMock.Set(func(_ context.Context, _ string) (domain.Room, error) { return domain.Room{ID: validRoomID}, nil })
 	schedulesRepo.GetByRoomIDMock.Set(func(_ context.Context, _ string) (domain.Schedule, error) {
-		return domain.Schedule{RoomID: "r1", DaysOfWeek: []int{1}, StartTime: "09:00", EndTime: "10:00"}, nil
+		return domain.Schedule{RoomID: validRoomID, DaysOfWeek: []int{1}, StartTime: "09:00", EndTime: "10:00"}, nil
 	})
 	slotsRepo.DateHasSlotsMock.Set(func(_ context.Context, _ string, _ time.Time) (bool, error) { return false, nil })
 	slotsRepo.BulkUpsertMock.Set(func(_ context.Context, slots []domain.Slot) error {
@@ -60,7 +62,7 @@ func TestListAvailableGeneratesWhenMissing(t *testing.T) {
 	uc := slotsuc.NewSlotsUsecase(roomsRepo, schedulesRepo, slotsRepo)
 
 	date := time.Date(2026, 3, 23, 0, 0, 0, 0, time.UTC)
-	got, err := uc.ListAvailable(context.Background(), "r1", date)
+	got, err := uc.ListAvailable(context.Background(), validRoomID, date)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -69,5 +71,26 @@ func TestListAvailableGeneratesWhenMissing(t *testing.T) {
 	}
 	if len(got) != 1 || got[0].ID != "s1" {
 		t.Fatalf("unexpected slots: %+v", got)
+	}
+}
+
+func TestListAvailableInvalidRoomID(t *testing.T) {
+	roomsRepo := repmocks.NewRoomRepositoryMock(t)
+	schedulesRepo := repmocks.NewScheduleRepositoryMock(t)
+	slotsRepo := repmocks.NewSlotRepositoryMock(t)
+	roomsRepo.GetByIDMock.Optional()
+	roomsRepo.CreateMock.Optional()
+	roomsRepo.ListMock.Optional()
+	schedulesRepo.GetByRoomIDMock.Optional()
+	schedulesRepo.CreateWithSlotsMock.Optional()
+	slotsRepo.DateHasSlotsMock.Optional()
+	slotsRepo.BulkUpsertMock.Optional()
+	slotsRepo.ListAvailableByRoomAndDateMock.Optional()
+	slotsRepo.GetByIDMock.Optional()
+
+	uc := slotsuc.NewSlotsUsecase(roomsRepo, schedulesRepo, slotsRepo)
+	_, err := uc.ListAvailable(context.Background(), "not-a-uuid", time.Now().UTC())
+	if err == nil || domain.AsAppError(err).Code != "INVALID_REQUEST" {
+		t.Fatalf("expected INVALID_REQUEST, got %v", err)
 	}
 }

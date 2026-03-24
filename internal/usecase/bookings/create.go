@@ -3,6 +3,8 @@ package bookings
 import (
 	"context"
 
+	"github.com/google/uuid"
+
 	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
 	"github.com/avito-internships/test-backend-1-M1steryO/pkg/identity"
 )
@@ -10,6 +12,9 @@ import (
 func (u *BookingsUsecase) Create(ctx context.Context, actorID string, actorRole domain.Role, slotID string, createConferenceLink bool) (domain.Booking, error) {
 	if actorRole != domain.RoleUser {
 		return domain.Booking{}, domain.Forbidden("booking available only for user role")
+	}
+	if _, err := uuid.Parse(slotID); err != nil {
+		return domain.Booking{}, domain.InvalidRequest("invalid slot_id")
 	}
 
 	slot, err := u.slotsRepo.GetByID(ctx, slotID)

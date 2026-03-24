@@ -42,12 +42,13 @@ test:
 	go test ./... -coverprofile=coverage.out -covermode=atomic -coverpkg=./internal/...
 
 test-e2e:
-	docker compose -f docker-compose.e2e.yml down -v --remove-orphans
-	docker compose -f docker-compose.e2e.yml up -d postgres_e2e
-	docker compose -f docker-compose.e2e.yml run  migrator_e2e
-	docker compose -f docker-compose.e2e.yml up -d --build app_e2e
+	@set -e; \
+	trap 'docker compose -f docker-compose.e2e.yml down -v --remove-orphans' EXIT; \
+	docker compose -f docker-compose.e2e.yml down -v --remove-orphans; \
+	docker compose -f docker-compose.e2e.yml up -d postgres_e2e; \
+	docker compose -f docker-compose.e2e.yml run migrator_e2e; \
+	docker compose -f docker-compose.e2e.yml up -d --build app_e2e; \
 	docker compose -f docker-compose.e2e.yml run tests
-	#docker compose -f docker-compose.e2e.yml down -v --remove-orphans
 
 
 test-coverage:
