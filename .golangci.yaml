@@ -7,8 +7,9 @@ linters:
     - govet
     - staticcheck
     - unused
+  exclusions:
+    paths:
+      - docs/
 
 run:
   tests: true
-  skip-dirs:
-    - docs/

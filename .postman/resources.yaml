@@ -1,0 +1,10 @@
+# Use this workspace to collaborate
+workspace:
+  id: 6e6ec175-0d92-4de6-8277-a1cacb791ab5
+
+localResources:
+  specs:
+    - ../api/api.yaml
+cloudResources:
+  collections:
+    ../postman/collections/Room Booking Service (Test Task): 3db5ea6f-06d0-4395-bb69-01604cb19063
