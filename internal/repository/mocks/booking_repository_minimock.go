@@ -48,12 +48,12 @@ type BookingRepositoryMock struct {
 	beforeListAllCounter uint64
 	ListAllMock          mBookingRepositoryMockListAll
 
-	funcListFutureByUser          func(ctx context.Context, userID string, now time.Time) (ba1 []domain.Booking, err error)
-	funcListFutureByUserOrigin    string
-	inspectFuncListFutureByUser   func(ctx context.Context, userID string, now time.Time)
-	afterListFutureByUserCounter  uint64
-	beforeListFutureByUserCounter uint64
-	ListFutureByUserMock          mBookingRepositoryMockListFutureByUser
+	funcListByUser          func(ctx context.Context, userID string, now time.Time) (ba1 []domain.Booking, err error)
+	funcListByUserOrigin    string
+	inspectFuncListByUser   func(ctx context.Context, userID string, now time.Time)
+	afterListByUserCounter  uint64
+	beforeListByUserCounter uint64
+	ListByUserMock          mBookingRepositoryMockListByUser
 }
 
 // NewBookingRepositoryMock returns a mock for mm_repository.BookingRepository
@@ -76,8 +76,8 @@ func NewBookingRepositoryMock(t minimock.Tester) *BookingRepositoryMock {
 	m.ListAllMock = mBookingRepositoryMockListAll{mock: m}
 	m.ListAllMock.callArgs = []*BookingRepositoryMockListAllParams{}
 
-	m.ListFutureByUserMock = mBookingRepositoryMockListFutureByUser{mock: m}
-	m.ListFutureByUserMock.callArgs = []*BookingRepositoryMockListFutureByUserParams{}
+	m.ListByUserMock = mBookingRepositoryMockListByUser{mock: m}
+	m.ListByUserMock.callArgs = []*BookingRepositoryMockListByUserParams{}
 
 	t.Cleanup(m.MinimockFinish)
 
@@ -1519,52 +1519,52 @@ func (m *BookingRepositoryMock) MinimockListAllInspect() {
 	}
 }
 
-type mBookingRepositoryMockListFutureByUser struct {
+type mBookingRepositoryMockListByUser struct {
 	optional           bool
 	mock               *BookingRepositoryMock
-	defaultExpectation *BookingRepositoryMockListFutureByUserExpectation
-	expectations       []*BookingRepositoryMockListFutureByUserExpectation
+	defaultExpectation *BookingRepositoryMockListByUserExpectation
+	expectations       []*BookingRepositoryMockListByUserExpectation
 
-	callArgs []*BookingRepositoryMockListFutureByUserParams
+	callArgs []*BookingRepositoryMockListByUserParams
 	mutex    sync.RWMutex
 
 	expectedInvocations       uint64
 	expectedInvocationsOrigin string
 }
 
-// BookingRepositoryMockListFutureByUserExpectation specifies expectation struct of the BookingRepository.ListFutureByUser
-type BookingRepositoryMockListFutureByUserExpectation struct {
+// BookingRepositoryMockListByUserExpectation specifies expectation struct of the BookingRepository.ListByUser
+type BookingRepositoryMockListByUserExpectation struct {
 	mock               *BookingRepositoryMock
-	params             *BookingRepositoryMockListFutureByUserParams
-	paramPtrs          *BookingRepositoryMockListFutureByUserParamPtrs
-	expectationOrigins BookingRepositoryMockListFutureByUserExpectationOrigins
-	results            *BookingRepositoryMockListFutureByUserResults
+	params             *BookingRepositoryMockListByUserParams
+	paramPtrs          *BookingRepositoryMockListByUserParamPtrs
+	expectationOrigins BookingRepositoryMockListByUserExpectationOrigins
+	results            *BookingRepositoryMockListByUserResults
 	returnOrigin       string
 	Counter            uint64
 }
 
-// BookingRepositoryMockListFutureByUserParams contains parameters of the BookingRepository.ListFutureByUser
-type BookingRepositoryMockListFutureByUserParams struct {
+// BookingRepositoryMockListByUserParams contains parameters of the BookingRepository.ListByUser
+type BookingRepositoryMockListByUserParams struct {
 	ctx    context.Context
 	userID string
 	now    time.Time
 }
 
-// BookingRepositoryMockListFutureByUserParamPtrs contains pointers to parameters of the BookingRepository.ListFutureByUser
-type BookingRepositoryMockListFutureByUserParamPtrs struct {
+// BookingRepositoryMockListByUserParamPtrs contains pointers to parameters of the BookingRepository.ListByUser
+type BookingRepositoryMockListByUserParamPtrs struct {
 	ctx    *context.Context
 	userID *string
 	now    *time.Time
 }
 
-// BookingRepositoryMockListFutureByUserResults contains results of the BookingRepository.ListFutureByUser
-type BookingRepositoryMockListFutureByUserResults struct {
+// BookingRepositoryMockListByUserResults contains results of the BookingRepository.ListByUser
+type BookingRepositoryMockListByUserResults struct {
 	ba1 []domain.Booking
 	err error
 }
 
-// BookingRepositoryMockListFutureByUserOrigins contains origins of expectations of the BookingRepository.ListFutureByUser
-type BookingRepositoryMockListFutureByUserExpectationOrigins struct {
+// BookingRepositoryMockListByUserOrigins contains origins of expectations of the BookingRepository.ListByUser
+type BookingRepositoryMockListByUserExpectationOrigins struct {
 	origin       string
 	originCtx    string
 	originUserID string
@@ -1576,320 +1576,320 @@ type BookingRepositoryMockListFutureByUserExpectationOrigins struct {
 // Optional() makes method check to work in '0 or more' mode.
 // It is NOT RECOMMENDED to use this option unless you really need it, as default behaviour helps to
 // catch the problems when the expected method call is totally skipped during test run.
-func (mmListFutureByUser *mBookingRepositoryMockListFutureByUser) Optional() *mBookingRepositoryMockListFutureByUser {
-	mmListFutureByUser.optional = true
-	return mmListFutureByUser
+func (mmListByUser *mBookingRepositoryMockListByUser) Optional() *mBookingRepositoryMockListByUser {
+	mmListByUser.optional = true
+	return mmListByUser
 }
 
-// Expect sets up expected params for BookingRepository.ListFutureByUser
-func (mmListFutureByUser *mBookingRepositoryMockListFutureByUser) Expect(ctx context.Context, userID string, now time.Time) *mBookingRepositoryMockListFutureByUser {
-	if mmListFutureByUser.mock.funcListFutureByUser != nil {
-		mmListFutureByUser.mock.t.Fatalf("BookingRepositoryMock.ListFutureByUser mock is already set by Set")
+// Expect sets up expected params for BookingRepository.ListByUser
+func (mmListByUser *mBookingRepositoryMockListByUser) Expect(ctx context.Context, userID string, now time.Time) *mBookingRepositoryMockListByUser {
+	if mmListByUser.mock.funcListByUser != nil {
+		mmListByUser.mock.t.Fatalf("BookingRepositoryMock.ListByUser mock is already set by Set")
 	}
 
-	if mmListFutureByUser.defaultExpectation == nil {
-		mmListFutureByUser.defaultExpectation = &BookingRepositoryMockListFutureByUserExpectation{}
+	if mmListByUser.defaultExpectation == nil {
+		mmListByUser.defaultExpectation = &BookingRepositoryMockListByUserExpectation{}
 	}
 
-	if mmListFutureByUser.defaultExpectation.paramPtrs != nil {
-		mmListFutureByUser.mock.t.Fatalf("BookingRepositoryMock.ListFutureByUser mock is already set by ExpectParams functions")
+	if mmListByUser.defaultExpectation.paramPtrs != nil {
+		mmListByUser.mock.t.Fatalf("BookingRepositoryMock.ListByUser mock is already set by ExpectParams functions")
 	}
 
-	mmListFutureByUser.defaultExpectation.params = &BookingRepositoryMockListFutureByUserParams{ctx, userID, now}
-	mmListFutureByUser.defaultExpectation.expectationOrigins.origin = minimock.CallerInfo(1)
-	for _, e := range mmListFutureByUser.expectations {
-		if minimock.Equal(e.params, mmListFutureByUser.defaultExpectation.params) {
-			mmListFutureByUser.mock.t.Fatalf("Expectation set by When has same params: %#v", *mmListFutureByUser.defaultExpectation.params)
+	mmListByUser.defaultExpectation.params = &BookingRepositoryMockListByUserParams{ctx, userID, now}
+	mmListByUser.defaultExpectation.expectationOrigins.origin = minimock.CallerInfo(1)
+	for _, e := range mmListByUser.expectations {
+		if minimock.Equal(e.params, mmListByUser.defaultExpectation.params) {
+			mmListByUser.mock.t.Fatalf("Expectation set by When has same params: %#v", *mmListByUser.defaultExpectation.params)
 		}
 	}
 
-	return mmListFutureByUser
+	return mmListByUser
 }
 
-// ExpectCtxParam1 sets up expected param ctx for BookingRepository.ListFutureByUser
-func (mmListFutureByUser *mBookingRepositoryMockListFutureByUser) ExpectCtxParam1(ctx context.Context) *mBookingRepositoryMockListFutureByUser {
-	if mmListFutureByUser.mock.funcListFutureByUser != nil {
-		mmListFutureByUser.mock.t.Fatalf("BookingRepositoryMock.ListFutureByUser mock is already set by Set")
+// ExpectCtxParam1 sets up expected param ctx for BookingRepository.ListByUser
+func (mmListByUser *mBookingRepositoryMockListByUser) ExpectCtxParam1(ctx context.Context) *mBookingRepositoryMockListByUser {
+	if mmListByUser.mock.funcListByUser != nil {
+		mmListByUser.mock.t.Fatalf("BookingRepositoryMock.ListByUser mock is already set by Set")
 	}
 
-	if mmListFutureByUser.defaultExpectation == nil {
-		mmListFutureByUser.defaultExpectation = &BookingRepositoryMockListFutureByUserExpectation{}
+	if mmListByUser.defaultExpectation == nil {
+		mmListByUser.defaultExpectation = &BookingRepositoryMockListByUserExpectation{}
 	}
 
-	if mmListFutureByUser.defaultExpectation.params != nil {
-		mmListFutureByUser.mock.t.Fatalf("BookingRepositoryMock.ListFutureByUser mock is already set by Expect")
+	if mmListByUser.defaultExpectation.params != nil {
+		mmListByUser.mock.t.Fatalf("BookingRepositoryMock.ListByUser mock is already set by Expect")
 	}
 
-	if mmListFutureByUser.defaultExpectation.paramPtrs == nil {
-		mmListFutureByUser.defaultExpectation.paramPtrs = &BookingRepositoryMockListFutureByUserParamPtrs{}
+	if mmListByUser.defaultExpectation.paramPtrs == nil {
+		mmListByUser.defaultExpectation.paramPtrs = &BookingRepositoryMockListByUserParamPtrs{}
 	}
-	mmListFutureByUser.defaultExpectation.paramPtrs.ctx = &ctx
-	mmListFutureByUser.defaultExpectation.expectationOrigins.originCtx = minimock.CallerInfo(1)
+	mmListByUser.defaultExpectation.paramPtrs.ctx = &ctx
+	mmListByUser.defaultExpectation.expectationOrigins.originCtx = minimock.CallerInfo(1)
 
-	return mmListFutureByUser
+	return mmListByUser
 }
 
-// ExpectUserIDParam2 sets up expected param userID for BookingRepository.ListFutureByUser
-func (mmListFutureByUser *mBookingRepositoryMockListFutureByUser) ExpectUserIDParam2(userID string) *mBookingRepositoryMockListFutureByUser {
-	if mmListFutureByUser.mock.funcListFutureByUser != nil {
-		mmListFutureByUser.mock.t.Fatalf("BookingRepositoryMock.ListFutureByUser mock is already set by Set")
+// ExpectUserIDParam2 sets up expected param userID for BookingRepository.ListByUser
+func (mmListByUser *mBookingRepositoryMockListByUser) ExpectUserIDParam2(userID string) *mBookingRepositoryMockListByUser {
+	if mmListByUser.mock.funcListByUser != nil {
+		mmListByUser.mock.t.Fatalf("BookingRepositoryMock.ListByUser mock is already set by Set")
 	}
 
-	if mmListFutureByUser.defaultExpectation == nil {
-		mmListFutureByUser.defaultExpectation = &BookingRepositoryMockListFutureByUserExpectation{}
+	if mmListByUser.defaultExpectation == nil {
+		mmListByUser.defaultExpectation = &BookingRepositoryMockListByUserExpectation{}
 	}
 
-	if mmListFutureByUser.defaultExpectation.params != nil {
-		mmListFutureByUser.mock.t.Fatalf("BookingRepositoryMock.ListFutureByUser mock is already set by Expect")
+	if mmListByUser.defaultExpectation.params != nil {
+		mmListByUser.mock.t.Fatalf("BookingRepositoryMock.ListByUser mock is already set by Expect")
 	}
 
-	if mmListFutureByUser.defaultExpectation.paramPtrs == nil {
-		mmListFutureByUser.defaultExpectation.paramPtrs = &BookingRepositoryMockListFutureByUserParamPtrs{}
+	if mmListByUser.defaultExpectation.paramPtrs == nil {
+		mmListByUser.defaultExpectation.paramPtrs = &BookingRepositoryMockListByUserParamPtrs{}
 	}
-	mmListFutureByUser.defaultExpectation.paramPtrs.userID = &userID
-	mmListFutureByUser.defaultExpectation.expectationOrigins.originUserID = minimock.CallerInfo(1)
+	mmListByUser.defaultExpectation.paramPtrs.userID = &userID
+	mmListByUser.defaultExpectation.expectationOrigins.originUserID = minimock.CallerInfo(1)
 
-	return mmListFutureByUser
+	return mmListByUser
 }
 
-// ExpectNowParam3 sets up expected param now for BookingRepository.ListFutureByUser
-func (mmListFutureByUser *mBookingRepositoryMockListFutureByUser) ExpectNowParam3(now time.Time) *mBookingRepositoryMockListFutureByUser {
-	if mmListFutureByUser.mock.funcListFutureByUser != nil {
-		mmListFutureByUser.mock.t.Fatalf("BookingRepositoryMock.ListFutureByUser mock is already set by Set")
+// ExpectNowParam3 sets up expected param now for BookingRepository.ListByUser
+func (mmListByUser *mBookingRepositoryMockListByUser) ExpectNowParam3(now time.Time) *mBookingRepositoryMockListByUser {
+	if mmListByUser.mock.funcListByUser != nil {
+		mmListByUser.mock.t.Fatalf("BookingRepositoryMock.ListByUser mock is already set by Set")
 	}
 
-	if mmListFutureByUser.defaultExpectation == nil {
-		mmListFutureByUser.defaultExpectation = &BookingRepositoryMockListFutureByUserExpectation{}
+	if mmListByUser.defaultExpectation == nil {
+		mmListByUser.defaultExpectation = &BookingRepositoryMockListByUserExpectation{}
 	}
 
-	if mmListFutureByUser.defaultExpectation.params != nil {
-		mmListFutureByUser.mock.t.Fatalf("BookingRepositoryMock.ListFutureByUser mock is already set by Expect")
+	if mmListByUser.defaultExpectation.params != nil {
+		mmListByUser.mock.t.Fatalf("BookingRepositoryMock.ListByUser mock is already set by Expect")
 	}
 
-	if mmListFutureByUser.defaultExpectation.paramPtrs == nil {
-		mmListFutureByUser.defaultExpectation.paramPtrs = &BookingRepositoryMockListFutureByUserParamPtrs{}
+	if mmListByUser.defaultExpectation.paramPtrs == nil {
+		mmListByUser.defaultExpectation.paramPtrs = &BookingRepositoryMockListByUserParamPtrs{}
 	}
-	mmListFutureByUser.defaultExpectation.paramPtrs.now = &now
-	mmListFutureByUser.defaultExpectation.expectationOrigins.originNow = minimock.CallerInfo(1)
+	mmListByUser.defaultExpectation.paramPtrs.now = &now
+	mmListByUser.defaultExpectation.expectationOrigins.originNow = minimock.CallerInfo(1)
 
-	return mmListFutureByUser
+	return mmListByUser
 }
 
-// Inspect accepts an inspector function that has same arguments as the BookingRepository.ListFutureByUser
-func (mmListFutureByUser *mBookingRepositoryMockListFutureByUser) Inspect(f func(ctx context.Context, userID string, now time.Time)) *mBookingRepositoryMockListFutureByUser {
-	if mmListFutureByUser.mock.inspectFuncListFutureByUser != nil {
-		mmListFutureByUser.mock.t.Fatalf("Inspect function is already set for BookingRepositoryMock.ListFutureByUser")
+// Inspect accepts an inspector function that has same arguments as the BookingRepository.ListByUser
+func (mmListByUser *mBookingRepositoryMockListByUser) Inspect(f func(ctx context.Context, userID string, now time.Time)) *mBookingRepositoryMockListByUser {
+	if mmListByUser.mock.inspectFuncListByUser != nil {
+		mmListByUser.mock.t.Fatalf("Inspect function is already set for BookingRepositoryMock.ListByUser")
 	}
 
-	mmListFutureByUser.mock.inspectFuncListFutureByUser = f
+	mmListByUser.mock.inspectFuncListByUser = f
 
-	return mmListFutureByUser
+	return mmListByUser
 }
 
-// Return sets up results that will be returned by BookingRepository.ListFutureByUser
-func (mmListFutureByUser *mBookingRepositoryMockListFutureByUser) Return(ba1 []domain.Booking, err error) *BookingRepositoryMock {
-	if mmListFutureByUser.mock.funcListFutureByUser != nil {
-		mmListFutureByUser.mock.t.Fatalf("BookingRepositoryMock.ListFutureByUser mock is already set by Set")
+// Return sets up results that will be returned by BookingRepository.ListByUser
+func (mmListByUser *mBookingRepositoryMockListByUser) Return(ba1 []domain.Booking, err error) *BookingRepositoryMock {
+	if mmListByUser.mock.funcListByUser != nil {
+		mmListByUser.mock.t.Fatalf("BookingRepositoryMock.ListByUser mock is already set by Set")
 	}
 
-	if mmListFutureByUser.defaultExpectation == nil {
-		mmListFutureByUser.defaultExpectation = &BookingRepositoryMockListFutureByUserExpectation{mock: mmListFutureByUser.mock}
+	if mmListByUser.defaultExpectation == nil {
+		mmListByUser.defaultExpectation = &BookingRepositoryMockListByUserExpectation{mock: mmListByUser.mock}
 	}
-	mmListFutureByUser.defaultExpectation.results = &BookingRepositoryMockListFutureByUserResults{ba1, err}
-	mmListFutureByUser.defaultExpectation.returnOrigin = minimock.CallerInfo(1)
-	return mmListFutureByUser.mock
+	mmListByUser.defaultExpectation.results = &BookingRepositoryMockListByUserResults{ba1, err}
+	mmListByUser.defaultExpectation.returnOrigin = minimock.CallerInfo(1)
+	return mmListByUser.mock
 }
 
-// Set uses given function f to mock the BookingRepository.ListFutureByUser method
-func (mmListFutureByUser *mBookingRepositoryMockListFutureByUser) Set(f func(ctx context.Context, userID string, now time.Time) (ba1 []domain.Booking, err error)) *BookingRepositoryMock {
-	if mmListFutureByUser.defaultExpectation != nil {
-		mmListFutureByUser.mock.t.Fatalf("Default expectation is already set for the BookingRepository.ListFutureByUser method")
+// Set uses given function f to mock the BookingRepository.ListByUser method
+func (mmListByUser *mBookingRepositoryMockListByUser) Set(f func(ctx context.Context, userID string, now time.Time) (ba1 []domain.Booking, err error)) *BookingRepositoryMock {
+	if mmListByUser.defaultExpectation != nil {
+		mmListByUser.mock.t.Fatalf("Default expectation is already set for the BookingRepository.ListByUser method")
 	}
 
-	if len(mmListFutureByUser.expectations) > 0 {
-		mmListFutureByUser.mock.t.Fatalf("Some expectations are already set for the BookingRepository.ListFutureByUser method")
+	if len(mmListByUser.expectations) > 0 {
+		mmListByUser.mock.t.Fatalf("Some expectations are already set for the BookingRepository.ListByUser method")
 	}
 
-	mmListFutureByUser.mock.funcListFutureByUser = f
-	mmListFutureByUser.mock.funcListFutureByUserOrigin = minimock.CallerInfo(1)
-	return mmListFutureByUser.mock
+	mmListByUser.mock.funcListByUser = f
+	mmListByUser.mock.funcListByUserOrigin = minimock.CallerInfo(1)
+	return mmListByUser.mock
 }
 
-// When sets expectation for the BookingRepository.ListFutureByUser which will trigger the result defined by the following
+// When sets expectation for the BookingRepository.ListByUser which will trigger the result defined by the following
 // Then helper
-func (mmListFutureByUser *mBookingRepositoryMockListFutureByUser) When(ctx context.Context, userID string, now time.Time) *BookingRepositoryMockListFutureByUserExpectation {
-	if mmListFutureByUser.mock.funcListFutureByUser != nil {
-		mmListFutureByUser.mock.t.Fatalf("BookingRepositoryMock.ListFutureByUser mock is already set by Set")
+func (mmListByUser *mBookingRepositoryMockListByUser) When(ctx context.Context, userID string, now time.Time) *BookingRepositoryMockListByUserExpectation {
+	if mmListByUser.mock.funcListByUser != nil {
+		mmListByUser.mock.t.Fatalf("BookingRepositoryMock.ListByUser mock is already set by Set")
 	}
 
-	expectation := &BookingRepositoryMockListFutureByUserExpectation{
-		mock:               mmListFutureByUser.mock,
-		params:             &BookingRepositoryMockListFutureByUserParams{ctx, userID, now},
-		expectationOrigins: BookingRepositoryMockListFutureByUserExpectationOrigins{origin: minimock.CallerInfo(1)},
+	expectation := &BookingRepositoryMockListByUserExpectation{
+		mock:               mmListByUser.mock,
+		params:             &BookingRepositoryMockListByUserParams{ctx, userID, now},
+		expectationOrigins: BookingRepositoryMockListByUserExpectationOrigins{origin: minimock.CallerInfo(1)},
 	}
-	mmListFutureByUser.expectations = append(mmListFutureByUser.expectations, expectation)
+	mmListByUser.expectations = append(mmListByUser.expectations, expectation)
 	return expectation
 }
 
-// Then sets up BookingRepository.ListFutureByUser return parameters for the expectation previously defined by the When method
-func (e *BookingRepositoryMockListFutureByUserExpectation) Then(ba1 []domain.Booking, err error) *BookingRepositoryMock {
-	e.results = &BookingRepositoryMockListFutureByUserResults{ba1, err}
+// Then sets up BookingRepository.ListByUser return parameters for the expectation previously defined by the When method
+func (e *BookingRepositoryMockListByUserExpectation) Then(ba1 []domain.Booking, err error) *BookingRepositoryMock {
+	e.results = &BookingRepositoryMockListByUserResults{ba1, err}
 	return e.mock
 }
 
-// Times sets number of times BookingRepository.ListFutureByUser should be invoked
-func (mmListFutureByUser *mBookingRepositoryMockListFutureByUser) Times(n uint64) *mBookingRepositoryMockListFutureByUser {
+// Times sets number of times BookingRepository.ListByUser should be invoked
+func (mmListByUser *mBookingRepositoryMockListByUser) Times(n uint64) *mBookingRepositoryMockListByUser {
 	if n == 0 {
-		mmListFutureByUser.mock.t.Fatalf("Times of BookingRepositoryMock.ListFutureByUser mock can not be zero")
+		mmListByUser.mock.t.Fatalf("Times of BookingRepositoryMock.ListByUser mock can not be zero")
 	}
-	mm_atomic.StoreUint64(&mmListFutureByUser.expectedInvocations, n)
-	mmListFutureByUser.expectedInvocationsOrigin = minimock.CallerInfo(1)
-	return mmListFutureByUser
+	mm_atomic.StoreUint64(&mmListByUser.expectedInvocations, n)
+	mmListByUser.expectedInvocationsOrigin = minimock.CallerInfo(1)
+	return mmListByUser
 }
 
-func (mmListFutureByUser *mBookingRepositoryMockListFutureByUser) invocationsDone() bool {
-	if len(mmListFutureByUser.expectations) == 0 && mmListFutureByUser.defaultExpectation == nil && mmListFutureByUser.mock.funcListFutureByUser == nil {
+func (mmListByUser *mBookingRepositoryMockListByUser) invocationsDone() bool {
+	if len(mmListByUser.expectations) == 0 && mmListByUser.defaultExpectation == nil && mmListByUser.mock.funcListByUser == nil {
 		return true
 	}
 
-	totalInvocations := mm_atomic.LoadUint64(&mmListFutureByUser.mock.afterListFutureByUserCounter)
-	expectedInvocations := mm_atomic.LoadUint64(&mmListFutureByUser.expectedInvocations)
+	totalInvocations := mm_atomic.LoadUint64(&mmListByUser.mock.afterListByUserCounter)
+	expectedInvocations := mm_atomic.LoadUint64(&mmListByUser.expectedInvocations)
 
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// ListFutureByUser implements mm_repository.BookingRepository
-func (mmListFutureByUser *BookingRepositoryMock) ListFutureByUser(ctx context.Context, userID string, now time.Time) (ba1 []domain.Booking, err error) {
-	mm_atomic.AddUint64(&mmListFutureByUser.beforeListFutureByUserCounter, 1)
-	defer mm_atomic.AddUint64(&mmListFutureByUser.afterListFutureByUserCounter, 1)
+// ListByUser implements mm_repository.BookingRepository
+func (mmListByUser *BookingRepositoryMock) ListByUser(ctx context.Context, userID string, now time.Time) (ba1 []domain.Booking, err error) {
+	mm_atomic.AddUint64(&mmListByUser.beforeListByUserCounter, 1)
+	defer mm_atomic.AddUint64(&mmListByUser.afterListByUserCounter, 1)
 
-	mmListFutureByUser.t.Helper()
+	mmListByUser.t.Helper()
 
-	if mmListFutureByUser.inspectFuncListFutureByUser != nil {
-		mmListFutureByUser.inspectFuncListFutureByUser(ctx, userID, now)
+	if mmListByUser.inspectFuncListByUser != nil {
+		mmListByUser.inspectFuncListByUser(ctx, userID, now)
 	}
 
-	mm_params := BookingRepositoryMockListFutureByUserParams{ctx, userID, now}
+	mm_params := BookingRepositoryMockListByUserParams{ctx, userID, now}
 
 	// Record call args
-	mmListFutureByUser.ListFutureByUserMock.mutex.Lock()
-	mmListFutureByUser.ListFutureByUserMock.callArgs = append(mmListFutureByUser.ListFutureByUserMock.callArgs, &mm_params)
-	mmListFutureByUser.ListFutureByUserMock.mutex.Unlock()
+	mmListByUser.ListByUserMock.mutex.Lock()
+	mmListByUser.ListByUserMock.callArgs = append(mmListByUser.ListByUserMock.callArgs, &mm_params)
+	mmListByUser.ListByUserMock.mutex.Unlock()
 
-	for _, e := range mmListFutureByUser.ListFutureByUserMock.expectations {
+	for _, e := range mmListByUser.ListByUserMock.expectations {
 		if minimock.Equal(*e.params, mm_params) {
 			mm_atomic.AddUint64(&e.Counter, 1)
 			return e.results.ba1, e.results.err
 		}
 	}
 
-	if mmListFutureByUser.ListFutureByUserMock.defaultExpectation != nil {
-		mm_atomic.AddUint64(&mmListFutureByUser.ListFutureByUserMock.defaultExpectation.Counter, 1)
-		mm_want := mmListFutureByUser.ListFutureByUserMock.defaultExpectation.params
-		mm_want_ptrs := mmListFutureByUser.ListFutureByUserMock.defaultExpectation.paramPtrs
+	if mmListByUser.ListByUserMock.defaultExpectation != nil {
+		mm_atomic.AddUint64(&mmListByUser.ListByUserMock.defaultExpectation.Counter, 1)
+		mm_want := mmListByUser.ListByUserMock.defaultExpectation.params
+		mm_want_ptrs := mmListByUser.ListByUserMock.defaultExpectation.paramPtrs
 
-		mm_got := BookingRepositoryMockListFutureByUserParams{ctx, userID, now}
+		mm_got := BookingRepositoryMockListByUserParams{ctx, userID, now}
 
 		if mm_want_ptrs != nil {
 
 			if mm_want_ptrs.ctx != nil && !minimock.Equal(*mm_want_ptrs.ctx, mm_got.ctx) {
-				mmListFutureByUser.t.Errorf("BookingRepositoryMock.ListFutureByUser got unexpected parameter ctx, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
-					mmListFutureByUser.ListFutureByUserMock.defaultExpectation.expectationOrigins.originCtx, *mm_want_ptrs.ctx, mm_got.ctx, minimock.Diff(*mm_want_ptrs.ctx, mm_got.ctx))
+				mmListByUser.t.Errorf("BookingRepositoryMock.ListByUser got unexpected parameter ctx, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+					mmListByUser.ListByUserMock.defaultExpectation.expectationOrigins.originCtx, *mm_want_ptrs.ctx, mm_got.ctx, minimock.Diff(*mm_want_ptrs.ctx, mm_got.ctx))
 			}
 
 			if mm_want_ptrs.userID != nil && !minimock.Equal(*mm_want_ptrs.userID, mm_got.userID) {
-				mmListFutureByUser.t.Errorf("BookingRepositoryMock.ListFutureByUser got unexpected parameter userID, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
-					mmListFutureByUser.ListFutureByUserMock.defaultExpectation.expectationOrigins.originUserID, *mm_want_ptrs.userID, mm_got.userID, minimock.Diff(*mm_want_ptrs.userID, mm_got.userID))
+				mmListByUser.t.Errorf("BookingRepositoryMock.ListByUser got unexpected parameter userID, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+					mmListByUser.ListByUserMock.defaultExpectation.expectationOrigins.originUserID, *mm_want_ptrs.userID, mm_got.userID, minimock.Diff(*mm_want_ptrs.userID, mm_got.userID))
 			}
 
 			if mm_want_ptrs.now != nil && !minimock.Equal(*mm_want_ptrs.now, mm_got.now) {
-				mmListFutureByUser.t.Errorf("BookingRepositoryMock.ListFutureByUser got unexpected parameter now, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
-					mmListFutureByUser.ListFutureByUserMock.defaultExpectation.expectationOrigins.originNow, *mm_want_ptrs.now, mm_got.now, minimock.Diff(*mm_want_ptrs.now, mm_got.now))
+				mmListByUser.t.Errorf("BookingRepositoryMock.ListByUser got unexpected parameter now, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+					mmListByUser.ListByUserMock.defaultExpectation.expectationOrigins.originNow, *mm_want_ptrs.now, mm_got.now, minimock.Diff(*mm_want_ptrs.now, mm_got.now))
 			}
 
 		} else if mm_want != nil && !minimock.Equal(*mm_want, mm_got) {
-			mmListFutureByUser.t.Errorf("BookingRepositoryMock.ListFutureByUser got unexpected parameters, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
-				mmListFutureByUser.ListFutureByUserMock.defaultExpectation.expectationOrigins.origin, *mm_want, mm_got, minimock.Diff(*mm_want, mm_got))
+			mmListByUser.t.Errorf("BookingRepositoryMock.ListByUser got unexpected parameters, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+				mmListByUser.ListByUserMock.defaultExpectation.expectationOrigins.origin, *mm_want, mm_got, minimock.Diff(*mm_want, mm_got))
 		}
 
-		mm_results := mmListFutureByUser.ListFutureByUserMock.defaultExpectation.results
+		mm_results := mmListByUser.ListByUserMock.defaultExpectation.results
 		if mm_results == nil {
-			mmListFutureByUser.t.Fatal("No results are set for the BookingRepositoryMock.ListFutureByUser")
+			mmListByUser.t.Fatal("No results are set for the BookingRepositoryMock.ListByUser")
 		}
 		return (*mm_results).ba1, (*mm_results).err
 	}
-	if mmListFutureByUser.funcListFutureByUser != nil {
-		return mmListFutureByUser.funcListFutureByUser(ctx, userID, now)
+	if mmListByUser.funcListByUser != nil {
+		return mmListByUser.funcListByUser(ctx, userID, now)
 	}
-	mmListFutureByUser.t.Fatalf("Unexpected call to BookingRepositoryMock.ListFutureByUser. %v %v %v", ctx, userID, now)
+	mmListByUser.t.Fatalf("Unexpected call to BookingRepositoryMock.ListByUser. %v %v %v", ctx, userID, now)
 	return
 }
 
-// ListFutureByUserAfterCounter returns a count of finished BookingRepositoryMock.ListFutureByUser invocations
-func (mmListFutureByUser *BookingRepositoryMock) ListFutureByUserAfterCounter() uint64 {
-	return mm_atomic.LoadUint64(&mmListFutureByUser.afterListFutureByUserCounter)
+// ListByUserAfterCounter returns a count of finished BookingRepositoryMock.ListByUser invocations
+func (mmListByUser *BookingRepositoryMock) ListByUserAfterCounter() uint64 {
+	return mm_atomic.LoadUint64(&mmListByUser.afterListByUserCounter)
 }
 
-// ListFutureByUserBeforeCounter returns a count of BookingRepositoryMock.ListFutureByUser invocations
-func (mmListFutureByUser *BookingRepositoryMock) ListFutureByUserBeforeCounter() uint64 {
-	return mm_atomic.LoadUint64(&mmListFutureByUser.beforeListFutureByUserCounter)
+// ListByUserBeforeCounter returns a count of BookingRepositoryMock.ListByUser invocations
+func (mmListByUser *BookingRepositoryMock) ListByUserBeforeCounter() uint64 {
+	return mm_atomic.LoadUint64(&mmListByUser.beforeListByUserCounter)
 }
 
-// Calls returns a list of arguments used in each call to BookingRepositoryMock.ListFutureByUser.
+// Calls returns a list of arguments used in each call to BookingRepositoryMock.ListByUser.
 // The list is in the same order as the calls were made (i.e. recent calls have a higher index)
-func (mmListFutureByUser *mBookingRepositoryMockListFutureByUser) Calls() []*BookingRepositoryMockListFutureByUserParams {
-	mmListFutureByUser.mutex.RLock()
+func (mmListByUser *mBookingRepositoryMockListByUser) Calls() []*BookingRepositoryMockListByUserParams {
+	mmListByUser.mutex.RLock()
 
-	argCopy := make([]*BookingRepositoryMockListFutureByUserParams, len(mmListFutureByUser.callArgs))
-	copy(argCopy, mmListFutureByUser.callArgs)
+	argCopy := make([]*BookingRepositoryMockListByUserParams, len(mmListByUser.callArgs))
+	copy(argCopy, mmListByUser.callArgs)
 
-	mmListFutureByUser.mutex.RUnlock()
+	mmListByUser.mutex.RUnlock()
 
 	return argCopy
 }
 
-// MinimockListFutureByUserDone returns true if the count of the ListFutureByUser invocations corresponds
+// MinimockListByUserDone returns true if the count of the ListByUser invocations corresponds
 // the number of defined expectations
-func (m *BookingRepositoryMock) MinimockListFutureByUserDone() bool {
-	if m.ListFutureByUserMock.optional {
+func (m *BookingRepositoryMock) MinimockListByUserDone() bool {
+	if m.ListByUserMock.optional {
 		// Optional methods provide '0 or more' call count restriction.
 		return true
 	}
 
-	for _, e := range m.ListFutureByUserMock.expectations {
+	for _, e := range m.ListByUserMock.expectations {
 		if mm_atomic.LoadUint64(&e.Counter) < 1 {
 			return false
 		}
 	}
 
-	return m.ListFutureByUserMock.invocationsDone()
+	return m.ListByUserMock.invocationsDone()
 }
 
-// MinimockListFutureByUserInspect logs each unmet expectation
-func (m *BookingRepositoryMock) MinimockListFutureByUserInspect() {
-	for _, e := range m.ListFutureByUserMock.expectations {
+// MinimockListByUserInspect logs each unmet expectation
+func (m *BookingRepositoryMock) MinimockListByUserInspect() {
+	for _, e := range m.ListByUserMock.expectations {
 		if mm_atomic.LoadUint64(&e.Counter) < 1 {
-			m.t.Errorf("Expected call to BookingRepositoryMock.ListFutureByUser at\n%s with params: %#v", e.expectationOrigins.origin, *e.params)
+			m.t.Errorf("Expected call to BookingRepositoryMock.ListByUser at\n%s with params: %#v", e.expectationOrigins.origin, *e.params)
 		}
 	}
 
-	afterListFutureByUserCounter := mm_atomic.LoadUint64(&m.afterListFutureByUserCounter)
+	afterListByUserCounter := mm_atomic.LoadUint64(&m.afterListByUserCounter)
 	// if default expectation was set then invocations count should be greater than zero
-	if m.ListFutureByUserMock.defaultExpectation != nil && afterListFutureByUserCounter < 1 {
-		if m.ListFutureByUserMock.defaultExpectation.params == nil {
-			m.t.Errorf("Expected call to BookingRepositoryMock.ListFutureByUser at\n%s", m.ListFutureByUserMock.defaultExpectation.returnOrigin)
+	if m.ListByUserMock.defaultExpectation != nil && afterListByUserCounter < 1 {
+		if m.ListByUserMock.defaultExpectation.params == nil {
+			m.t.Errorf("Expected call to BookingRepositoryMock.ListByUser at\n%s", m.ListByUserMock.defaultExpectation.returnOrigin)
 		} else {
-			m.t.Errorf("Expected call to BookingRepositoryMock.ListFutureByUser at\n%s with params: %#v", m.ListFutureByUserMock.defaultExpectation.expectationOrigins.origin, *m.ListFutureByUserMock.defaultExpectation.params)
+			m.t.Errorf("Expected call to BookingRepositoryMock.ListByUser at\n%s with params: %#v", m.ListByUserMock.defaultExpectation.expectationOrigins.origin, *m.ListByUserMock.defaultExpectation.params)
 		}
 	}
 	// if func was set then invocations count should be greater than zero
-	if m.funcListFutureByUser != nil && afterListFutureByUserCounter < 1 {
-		m.t.Errorf("Expected call to BookingRepositoryMock.ListFutureByUser at\n%s", m.funcListFutureByUserOrigin)
+	if m.funcListByUser != nil && afterListByUserCounter < 1 {
+		m.t.Errorf("Expected call to BookingRepositoryMock.ListByUser at\n%s", m.funcListByUserOrigin)
 	}
 
-	if !m.ListFutureByUserMock.invocationsDone() && afterListFutureByUserCounter > 0 {
-		m.t.Errorf("Expected %d calls to BookingRepositoryMock.ListFutureByUser at\n%s but found %d calls",
-			mm_atomic.LoadUint64(&m.ListFutureByUserMock.expectedInvocations), m.ListFutureByUserMock.expectedInvocationsOrigin, afterListFutureByUserCounter)
+	if !m.ListByUserMock.invocationsDone() && afterListByUserCounter > 0 {
+		m.t.Errorf("Expected %d calls to BookingRepositoryMock.ListByUser at\n%s but found %d calls",
+			mm_atomic.LoadUint64(&m.ListByUserMock.expectedInvocations), m.ListByUserMock.expectedInvocationsOrigin, afterListByUserCounter)
 	}
 }
 
@@ -1905,7 +1905,7 @@ func (m *BookingRepositoryMock) MinimockFinish() {
 
 			m.MinimockListAllInspect()
 
-			m.MinimockListFutureByUserInspect()
+			m.MinimockListByUserInspect()
 		}
 	})
 }
@@ -1933,5 +1933,5 @@ func (m *BookingRepositoryMock) minimockDone() bool {
 		m.MinimockCreateDone() &&
 		m.MinimockGetByIDDone() &&
 		m.MinimockListAllDone() &&
-		m.MinimockListFutureByUserDone()
+		m.MinimockListByUserDone()
 }

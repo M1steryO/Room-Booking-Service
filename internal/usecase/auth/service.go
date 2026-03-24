@@ -1,9 +1,14 @@
 package auth
 
 import (
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/platform/clock"
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/platform/security"
 	"github.com/avito-internships/test-backend-1-M1steryO/internal/repository"
+	"github.com/avito-internships/test-backend-1-M1steryO/pkg/clock"
+	"github.com/avito-internships/test-backend-1-M1steryO/pkg/security"
+)
+
+const (
+	dummyAdminID = "00000000-0000-0000-0000-000000000001"
+	dummyUserID  = "00000000-0000-0000-0000-000000000002"
 )
 
 type AuthUsecase struct {

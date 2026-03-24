@@ -1,0 +1,24 @@
+$kind: http-request
+description: >
+  Доступно только роли user. Пользователь может отменить только свою бронь.
+  Операция **идемпотентна**: повторный вызов на уже отменённой брони не является
+  ошибкой и возвращает 200 с актуальным состоянием брони (status: cancelled).
+  При попытке отменить чужую бронь — 403. При отсутствии брони с указанным ID —
+  404.
+url: "{{baseUrl}}/bookings/:bookingId/cancel"
+method: POST
+headers:
+  Accept: application/json
+pathVariables:
+  - key: bookingId
+    value: 98010285-1d32-8c04-4966-5846d11b6cdb
+    description: Идентификатор брони
+body:
+  type: text
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{bearerToken}}"
+examples: ./.resources/Отменить бронь (только своя бронь, только user).resources/examples
+order: 1000

@@ -11,6 +11,8 @@ import (
 )
 
 func (r *RoomsRepository) Create(ctx context.Context, room domain.Room) (domain.Room, error) {
+	const op = "repository.rooms.Create"
+
 	query := `
 		INSERT INTO rooms (id, name, description, capacity)
 		VALUES ($1, $2, $3, $4)
@@ -21,13 +23,15 @@ func (r *RoomsRepository) Create(ctx context.Context, room domain.Room) (domain.
 	err := r.pool.QueryRow(ctx, query, room.ID, room.Name, room.Description, room.Capacity).
 		Scan(&created.ID, &created.Name, &created.Description, &created.Capacity, &created.CreatedAt)
 	if err != nil {
-		return domain.Room{}, fmt.Errorf("create room: %w", err)
+		return domain.Room{}, fmt.Errorf("%s: %w", op, err)
 	}
 
 	return created, nil
 }
 
 func (r *RoomsRepository) List(ctx context.Context) ([]domain.Room, error) {
+	const op = "repository.rooms.List"
+
 	query := `
 		SELECT id, name, description, capacity, created_at
 		FROM rooms
@@ -36,7 +40,7 @@ func (r *RoomsRepository) List(ctx context.Context) ([]domain.Room, error) {
 
 	rows, err := r.pool.Query(ctx, query)
 	if err != nil {
-		return nil, fmt.Errorf("list rooms: %w", err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	defer rows.Close()
 
@@ -50,6 +54,8 @@ func (r *RoomsRepository) List(ctx context.Context) ([]domain.Room, error) {
 }
 
 func (r *RoomsRepository) GetByID(ctx context.Context, roomID string) (domain.Room, error) {
+	const op = "repository.rooms.GetByID"
+
 	query := `
 		SELECT id, name, description, capacity, created_at
 		FROM rooms
@@ -63,7 +69,7 @@ func (r *RoomsRepository) GetByID(ctx context.Context, roomID string) (domain.Ro
 		if errors.Is(err, pgx.ErrNoRows) {
 			return domain.Room{}, domain.RoomNotFound()
 		}
-		return domain.Room{}, fmt.Errorf("get room by id: %w", err)
+		return domain.Room{}, fmt.Errorf("%s: %w", op, err)
 	}
 
 	return room, nil

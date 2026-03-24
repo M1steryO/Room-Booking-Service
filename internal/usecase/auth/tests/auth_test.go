@@ -2,11 +2,11 @@ package auth_test
 
 import (
 	"context"
+	"github.com/avito-internships/test-backend-1-M1steryO/pkg/security"
 	"testing"
 	"time"
 
 	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/platform/security"
 	repmocks "github.com/avito-internships/test-backend-1-M1steryO/internal/repository/mocks"
 	authuc "github.com/avito-internships/test-backend-1-M1steryO/internal/usecase/auth"
 )

@@ -1,8 +1,8 @@
 package schedules
 
 import (
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/platform/clock"
 	"github.com/avito-internships/test-backend-1-M1steryO/internal/repository"
+	"github.com/avito-internships/test-backend-1-M1steryO/pkg/clock"
 )
 
 type SchedulesUsecase struct {

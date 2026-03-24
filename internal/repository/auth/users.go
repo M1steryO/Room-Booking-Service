@@ -5,12 +5,15 @@ import (
 	"errors"
 	"fmt"
 	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
+	"github.com/avito-internships/test-backend-1-M1steryO/internal/repository"
 
-	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgconn"
+	"github.com/jackc/pgx/v4"
 )
 
 func (r *UsersRepository) Create(ctx context.Context, user domain.User) (domain.User, error) {
+	const op = "repository.users.Create"
+
 	query := `
 		INSERT INTO users (id, email, password_hash, role, created_at)
 		VALUES ($1, $2, $3, $4, $5)
@@ -22,16 +25,18 @@ func (r *UsersRepository) Create(ctx context.Context, user domain.User) (domain.
 		Scan(&created.ID, &created.Email, &created.PasswordHash, &created.Role, &created.CreatedAt)
 	if err != nil {
 		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+		if errors.As(err, &pgErr) && pgErr.Code == repository.UniqueViolationCode {
 			return domain.User{}, domain.InvalidRequest("email already exists")
 		}
-		return domain.User{}, fmt.Errorf("create user: %w", err)
+		return domain.User{}, fmt.Errorf("%s: %w", op, err)
 	}
 
 	return created, nil
 }
 
 func (r *UsersRepository) GetByEmail(ctx context.Context, email string) (domain.User, error) {
+	const op = "repository.users.GetByEmail"
+
 	query := `
 		SELECT id, email, password_hash, role, created_at
 		FROM users
@@ -45,13 +50,15 @@ func (r *UsersRepository) GetByEmail(ctx context.Context, email string) (domain.
 		if errors.Is(err, pgx.ErrNoRows) {
 			return domain.User{}, domain.Unauthorized("invalid credentials")
 		}
-		return domain.User{}, fmt.Errorf("get user by email: %w", err)
+		return domain.User{}, fmt.Errorf("%s: %w", op, err)
 	}
 
 	return user, nil
 }
 
 func (r *UsersRepository) UpsertSystemUsers(ctx context.Context, users []domain.User) error {
+	const op = "repository.users.UpsertSystemUsers"
+
 	query := `
 		INSERT INTO users (id, email, password_hash, role, created_at)
 		VALUES ($1, $2, $3, $4, $5)
@@ -75,7 +82,7 @@ func (r *UsersRepository) UpsertSystemUsers(ctx context.Context, users []domain.
 
 	for range users {
 		if _, err := results.Exec(); err != nil {
-			return fmt.Errorf("upsert system users: %w", err)
+			return fmt.Errorf("%s: %w", op, err)
 		}
 	}
 

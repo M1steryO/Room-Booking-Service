@@ -1,0 +1,38 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/rooms/create"
+  method: POST
+  headers:
+    - key: Content-Type
+      value: application/json
+    - key: Accept
+      value: application/json
+    - key: Authorization
+      value: Bearer <token>
+      description: "Added as a part of security scheme: bearer"
+  body:
+    type: json
+    content: |-
+      {
+        "name": "string",
+        "description": "string",
+        "capacity": 4630
+      }
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "room": {
+          "id": "065dd2d7-e205-a945-5b28-00dc6b3705a6",
+          "name": "string",
+          "description": "string",
+          "capacity": 9105,
+          "createdAt": "1990-05-02T04:41:05.957Z"
+        }
+      }
+order: 1000

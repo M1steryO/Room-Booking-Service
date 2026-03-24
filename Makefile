@@ -1,6 +1,3 @@
-APP_NAME=room-booking-service
-
-
 include local.env
 
 LOCAL_BIN:=$(CURDIR)/bin
@@ -10,8 +7,8 @@ LOCAL_MIGRATION_DSN="host=localhost port=$(PG_PORT) dbname=$(PG_DATABASE_NAME) u
 
 
 install-deps:
-	GOBIN=$(LOCAL_BIN) go install github.com/gojuno/minimock/v3/cmd/minimock@latest
-
+	GOBIN=$(LOCAL_BIN) go install github.com/pressly/goose/v3/cmd/goose@v3.14.0 # для миграций
+    GOBIN=$(LOCAL_BIN) go install github.com/gojuno/minimock/v3/cmd/minimock@latest
 
 
 local-migration-status:
@@ -43,12 +40,15 @@ seed:
 test:
 	go test ./... -coverprofile=coverage.out -covermode=atomic
 
-test-unit:
-	go test ./internal/... ./tests/unit/... -coverprofile=coverage.out -covermode=atomic
 
 test-e2e:
-	docker compose -f docker-compose.e2e.yml up --build --abort-on-container-exit --exit-code-from tests
-	docker compose -f docker-compose.e2e.yml down -v
+	docker compose -f docker-compose.e2e.yml down -v --remove-orphans
+	docker compose -f docker-compose.e2e.yml up -d postgres_e2e
+	docker compose -f docker-compose.e2e.yml run  migrator_e2e
+	docker compose -f docker-compose.e2e.yml up -d --build app_e2e
+	docker compose -f docker-compose.e2e.yml run tests
+	#docker compose -f docker-compose.e2e.yml down -v --remove-orphans
+
 
 test-coverage:
 	go clean -testcache
@@ -71,4 +71,4 @@ run:
 fmt:
 	gofmt -w ./cmd ./internal ./tests
 
-.PHONY: up down logs seed test test-unit test-e2e lint swagger run fmt
+.PHONY: up down logs seed test test-e2e lint swagger run fmt

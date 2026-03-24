@@ -1,0 +1,4 @@
+$kind: collection
+description: Сервис бронирования переговорок
+variables:
+  baseUrl: http://localhost:8080

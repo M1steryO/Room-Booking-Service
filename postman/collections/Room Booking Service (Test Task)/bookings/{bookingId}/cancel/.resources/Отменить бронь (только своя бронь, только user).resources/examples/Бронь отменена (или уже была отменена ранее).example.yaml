@@ -1,0 +1,36 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/bookings/:bookingId/cancel"
+  method: POST
+  headers:
+    - key: Accept
+      value: application/json
+    - key: Authorization
+      value: Bearer <token>
+      description: "Added as a part of security scheme: bearer"
+  pathVariables:
+    - key: bookingId
+      value: 98010285-1d32-8c04-4966-5846d11b6cdb
+      description: Идентификатор брони
+  body:
+    type: text
+    content: ""
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "booking": {
+          "id": "221ed695-3525-ffff-3517-879286a5ffe7",
+          "slotId": "79d2b20e-61ab-9706-a519-9ddfb0667393",
+          "userId": "242c96ba-fde6-4e19-a9b0-f5496feb5ce5",
+          "status": "active",
+          "conferenceLink": "http://xebpFfJhwaApJugoTEp.ydMJXmd",
+          "createdAt": "2023-01-03T10:16:49.177Z"
+        }
+      }
+order: 1000

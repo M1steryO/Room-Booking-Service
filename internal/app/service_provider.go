@@ -3,10 +3,9 @@ package app
 import (
 	"context"
 	"github.com/M1steryO/platform_common/pkg/closer"
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/conference"
+	"github.com/avito-internships/test-backend-1-M1steryO/internal/client"
+	"github.com/avito-internships/test-backend-1-M1steryO/internal/client/conference"
 	"github.com/avito-internships/test-backend-1-M1steryO/internal/config"
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/platform/clock"
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/platform/security"
 	authrepo "github.com/avito-internships/test-backend-1-M1steryO/internal/repository/auth"
 	bookingsrepo "github.com/avito-internships/test-backend-1-M1steryO/internal/repository/bookings"
 	roomsrepo "github.com/avito-internships/test-backend-1-M1steryO/internal/repository/rooms"
@@ -17,6 +16,8 @@ import (
 	roomsuc "github.com/avito-internships/test-backend-1-M1steryO/internal/usecase/rooms"
 	schedulesuc "github.com/avito-internships/test-backend-1-M1steryO/internal/usecase/schedules"
 	slotsuc "github.com/avito-internships/test-backend-1-M1steryO/internal/usecase/slots"
+	"github.com/avito-internships/test-backend-1-M1steryO/pkg/clock"
+	"github.com/avito-internships/test-backend-1-M1steryO/pkg/security"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"log"
 )
@@ -31,7 +32,7 @@ type serviceProvider struct {
 
 	clock      clock.Clock
 	jwtManager *security.JWTManager
-	conference conference.Service
+	conference client.ConferenceService
 
 	authUC      *authuc.AuthUsecase
 	roomsUC     *roomsuc.RoomsUsecase
@@ -123,9 +124,9 @@ func (sp *serviceProvider) JWTManager() *security.JWTManager {
 	return sp.jwtManager
 }
 
-func (sp *serviceProvider) ConferenceService() conference.Service {
+func (sp *serviceProvider) ConferenceService() client.ConferenceService {
 	if sp.conference == nil {
-		sp.conference = conference.NewMockService(
+		sp.conference = conference.NewConferenceService(
 			sp.AppConfig().ConferenceBaseURL(),
 			sp.AppConfig().ConferenceTimeout(),
 		)

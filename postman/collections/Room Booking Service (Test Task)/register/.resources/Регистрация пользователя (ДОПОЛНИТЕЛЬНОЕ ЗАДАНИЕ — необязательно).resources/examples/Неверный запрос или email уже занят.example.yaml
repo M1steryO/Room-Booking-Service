@@ -1,0 +1,30 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/register"
+  method: POST
+  headers:
+    Content-Type: application/json
+    Accept: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "email": "3MSHMD6BYY-HO9@uNDrdscHntbtPMpkofmlE.scj",
+        "password": "string",
+        "role": "admin"
+      }
+response:
+  statusCode: 400
+  statusText: Bad Request
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": {
+          "code": "INVALID_REQUEST",
+          "message": "invalid request"
+        }
+      }
+order: 2000

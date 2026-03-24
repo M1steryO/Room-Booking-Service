@@ -1,0 +1,40 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/rooms/list"
+  method: GET
+  headers:
+    - key: Accept
+      value: application/json
+    - key: Authorization
+      value: Bearer <token>
+      description: "Added as a part of security scheme: bearer"
+  body:
+    type: text
+    content: ""
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "rooms": [
+          {
+            "id": "c0685216-2bce-62c7-b99d-7d8cdc36fa90",
+            "name": "string",
+            "description": "string",
+            "capacity": 8888,
+            "createdAt": "2018-05-30T07:31:36.334Z"
+          },
+          {
+            "id": "d3f55b2c-399c-ecc3-6676-16e0f5b253a8",
+            "name": "string",
+            "description": "string",
+            "capacity": 7150,
+            "createdAt": "1983-03-02T05:24:28.394Z"
+          }
+        ]
+      }
+order: 1000

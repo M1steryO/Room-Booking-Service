@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: booking
+          POSTGRES_USER: booking
+          POSTGRES_PASSWORD: booking
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U booking -d booking"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+
+      - name: Download modules
+        run: go mod download
+
+      - name: Run unit and integration tests
+        run: go test ./... -coverprofile=coverage.out -covermode=atomic
+        env:
+          APP_PORT: 8080
+          APP_ENV: ci
+          DATABASE_URL: postgres://booking:booking@localhost:5432/booking?sslmode=disable
+          JWT_SECRET: ci-secret
+          JWT_TTL: 24h
+          SLOT_HORIZON_DAYS: 14
+          CONFERENCE_BASE_URL: https://conference.mock.local
+          CONFERENCE_TIMEOUT: 2s
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.out
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+      - uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.11.3

@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+const UniqueViolationCode = "23505"
+
 type UserRepository interface {
 	Create(ctx context.Context, user domain.User) (domain.User, error)
 	GetByEmail(ctx context.Context, email string) (domain.User, error)
@@ -33,7 +35,7 @@ type SlotRepository interface {
 type BookingRepository interface {
 	Create(ctx context.Context, booking domain.Booking) (domain.Booking, error)
 	ListAll(ctx context.Context, page, pageSize int) ([]domain.Booking, int, error)
-	ListFutureByUser(ctx context.Context, userID string, now time.Time) ([]domain.Booking, error)
+	ListByUser(ctx context.Context, userID string, now time.Time) ([]domain.Booking, error)
 	GetByID(ctx context.Context, bookingID string) (domain.Booking, error)
 	CancelByOwner(ctx context.Context, bookingID, userID string) (domain.Booking, error)
 }

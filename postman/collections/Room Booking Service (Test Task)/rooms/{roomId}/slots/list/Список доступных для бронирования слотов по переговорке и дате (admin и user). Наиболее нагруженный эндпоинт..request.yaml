@@ -1,0 +1,30 @@
+$kind: http-request
+description: >
+  Возвращает слоты, не занятые активной бронью, для указанной переговорки на
+  указанную дату. Все даты и время передаются и возвращаются в UTC. Параметр
+  `date` является обязательным; при его отсутствии возвращается 400. Если у
+  переговорки нет расписания — возвращается пустой список (переговорка считается
+  всегда недоступной).
+url: "{{baseUrl}}/rooms/:roomId/slots/list?date=1993-11-29"
+method: GET
+headers:
+  Accept: application/json
+queryParams:
+  - key: date
+    value: 1993-11-29
+    description: "Дата в формате ISO 8601 (например: 2024-06-10). Обязательный
+      параметр; при отсутствии — 400."
+pathVariables:
+  - key: roomId
+    value: 98010285-1d32-8c04-4966-5846d11b6cdb
+    description: Идентификатор переговорки
+body:
+  type: text
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{bearerToken}}"
+examples: ./.resources/Список доступных для бронирования слотов по переговорке и
+  дате (admin и user). Наиболее нагруженный эндпоинт..resources/examples
+order: 1000

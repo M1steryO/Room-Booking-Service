@@ -1,0 +1,25 @@
+$kind: http-request
+description: >
+  Доступно только роли admin. Поддерживает пагинацию через параметры `page` и
+  `pageSize`. Оба параметра опциональны; значения по умолчанию: `page=1`,
+  `pageSize=20`. Максимальное значение `pageSize` — 100.
+url: "{{baseUrl}}/bookings/list?page=1&pageSize=20"
+method: GET
+headers:
+  Accept: application/json
+queryParams:
+  - key: page
+    value: "1"
+    description: Номер страницы (начиная с 1). По умолчанию 1.
+  - key: pageSize
+    value: "20"
+    description: Количество записей на странице. По умолчанию 20, максимум 100.
+body:
+  type: text
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{bearerToken}}"
+examples: ./.resources/Список всех броней с пагинацией (только admin).resources/examples
+order: 1000

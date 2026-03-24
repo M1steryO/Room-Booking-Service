@@ -1,0 +1,47 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/rooms/:roomId/slots/list?date=1993-11-29"
+  method: GET
+  headers:
+    - key: Accept
+      value: application/json
+    - key: Authorization
+      value: Bearer <token>
+      description: "Added as a part of security scheme: bearer"
+  queryParams:
+    - key: date
+      value: 1993-11-29
+      description: "Дата в формате ISO 8601 (например: 2024-06-10). Обязательный
+        параметр; при отсутствии — 400."
+  pathVariables:
+    - key: roomId
+      value: 98010285-1d32-8c04-4966-5846d11b6cdb
+      description: Идентификатор переговорки
+  body:
+    type: text
+    content: ""
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "slots": [
+          {
+            "id": "b277a0a0-2226-338a-b655-cced72554ef9",
+            "roomId": "e1ebb153-bea2-0084-b198-84f496c43960",
+            "start": "1994-09-16T23:58:37.552Z",
+            "end": "1975-11-13T15:08:16.766Z"
+          },
+          {
+            "id": "3916335c-9084-b276-be42-fbdc4e1163cd",
+            "roomId": "2b0a42d6-e6b2-b4a8-351c-21f516358139",
+            "start": "1953-11-11T00:16:01.466Z",
+            "end": "1962-11-25T09:29:58.065Z"
+          }
+        ]
+      }
+order: 1000

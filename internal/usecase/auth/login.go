@@ -1,0 +1,21 @@
+package auth
+
+import (
+	"context"
+
+	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
+	"github.com/avito-internships/test-backend-1-M1steryO/pkg/security"
+)
+
+func (u *AuthUsecase) Login(ctx context.Context, email string, password string) (string, error) {
+	user, err := u.usersRepo.GetByEmail(ctx, email)
+	if err != nil {
+		return "", err
+	}
+
+	if !security.CheckPassword(password, user.PasswordHash) {
+		return "", domain.Unauthorized("invalid credentials")
+	}
+
+	return u.tokens.Issue(user.ID, user.Role, u.clock.Now())
+}

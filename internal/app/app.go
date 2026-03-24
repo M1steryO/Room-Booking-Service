@@ -5,15 +5,15 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/avito-internships/test-backend-1-M1steryO/pkg/logger"
 	"net/http"
 	"sync"
 	"time"
 
 	"github.com/M1steryO/platform_common/pkg/closer"
 	"github.com/avito-internships/test-backend-1-M1steryO/internal/config"
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/core/logger"
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/transport/httpx"
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/transport/httpx/middleware"
+	httpx "github.com/avito-internships/test-backend-1-M1steryO/internal/delivery/http"
+	"github.com/avito-internships/test-backend-1-M1steryO/internal/delivery/http/middleware"
 )
 
 const (
@@ -116,7 +116,6 @@ func (a *App) initDeps(ctx context.Context) error {
 		a.initConfig,
 		a.initServiceProvider,
 		a.initLogger,
-		//a.initMigrations,
 		a.initBootstrap,
 		a.initHTTPServer,
 	}
@@ -141,16 +140,12 @@ func (a *App) initServiceProvider(_ context.Context) error {
 	return nil
 }
 
-//	func (a *App) initMigrations(ctx context.Context) error {
-//		return migrations.Up(a.serviceProvider.Pool(ctx))
-//	}
-
 func (a *App) initLogger(_ context.Context) error {
 	logger.Init(a.serviceProvider.LoggerConfig().Env())
 	return nil
 }
 
-// Создание тестовых пользователей
+// Создание dummy пользователей
 func (a *App) initBootstrap(ctx context.Context) error {
 	if err := a.serviceProvider.AuthUsecase(ctx).EnsureDummyUsers(ctx); err != nil {
 		return fmt.Errorf("failed to ensure dummy users: %w", err)

@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   postgres_e2e:
     image: postgres:16
@@ -12,12 +10,33 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
+    networks:
+      - e2e
 
-  app_e2e:
-    build: ../..
+  migrator_e2e:
+    build:
+      context: .
+      dockerfile: migration.Dockerfile
+    restart: "no"
     depends_on:
       postgres_e2e:
         condition: service_healthy
+    environment:
+      DB_HOST: postgres_e2e
+      DB_PORT: 5432
+      DB_USER: booking
+      DB_PASSWORD: booking
+      DB_NAME: booking_e2e
+      MIGRATION_DIR: ./migrations
+    networks:
+      - e2e
+
+  app_e2e:
+    build: .
+    restart: "no"
+    depends_on:
+      migrator_e2e:
+        condition: service_completed_successfully
     environment:
       HTTP_HOST: 0.0.0.0
       HTTP_PORT: 8080
@@ -28,16 +47,18 @@ services:
       DB_PASSWORD: booking
       DATABASE_NAME: booking_e2e
 
-      ENV: e2e
+      ENV: local
 
       JWT_SECRET: e2e-secret
       JWT_TTL: 24h
       SLOT_HORIZON_DAYS: 14
       CONFERENCE_BASE_URL: https://conference.mock.local
       CONFERENCE_TIMEOUT: 2s
+    networks:
+      - e2e
 
   tests:
-    image: golang:1.23
+    image: golang:1.25-alpine
     working_dir: /workspace
     depends_on:
       app_e2e:
@@ -45,5 +66,10 @@ services:
     environment:
       E2E_BASE_URL: http://app_e2e:8080
     volumes:
-      - ../..:/workspace
+      - .:/workspace
     command: ["/bin/sh", "-c", "go test -tags=e2e ./tests/e2e -v"]
+    networks:
+      - e2e
+
+networks:
+  e2e:

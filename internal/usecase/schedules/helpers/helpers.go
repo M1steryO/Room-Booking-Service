@@ -3,7 +3,7 @@ package helpers
 import (
 	"fmt"
 	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/platform/identity"
+	"github.com/avito-internships/test-backend-1-M1steryO/pkg/identity"
 	"slices"
 	"time"
 )

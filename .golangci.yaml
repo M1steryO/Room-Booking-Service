@@ -10,3 +10,5 @@ linters:
 
 run:
   tests: true
+  skip-dirs:
+    - docs/

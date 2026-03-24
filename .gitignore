@@ -1,12 +1,14 @@
 .env
 *.env
 coverage.out
+coverage_usecase.out
 dist/
 bin/
 docs/
 /coverage.out
 !/.idea/
 !/bin/
+local.env
 
 
 # Binaries for programs and plugins
@@ -301,3 +303,5 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+!/local.env
+!/bin/

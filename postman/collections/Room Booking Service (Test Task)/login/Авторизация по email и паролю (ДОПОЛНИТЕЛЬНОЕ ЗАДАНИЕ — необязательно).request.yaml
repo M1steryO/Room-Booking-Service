@@ -1,0 +1,20 @@
+$kind: http-request
+description: >
+  Авторизует пользователя по email и паролю, возвращает JWT. Реализация этого
+  эндпоинта является **дополнительным заданием**. Для авторизации в рамках
+  обязательной части используйте `/dummyLogin`. Доступен без авторизации.
+url: "{{baseUrl}}/login"
+method: POST
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: json
+  content: |-
+    {
+      "email": "CUH85iMVJmkT5D@rHUH.cwr",
+      "password": "string"
+    }
+examples: ./.resources/Авторизация по email и паролю (ДОПОЛНИТЕЛЬНОЕ ЗАДАНИЕ —
+  необязательно).resources/examples
+order: 1000

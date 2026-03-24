@@ -3,13 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/avito-internships/test-backend-1-M1steryO/pkg/logger"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/avito-internships/test-backend-1-M1steryO/internal/app"
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/core/logger"
 )
 
 func main() {

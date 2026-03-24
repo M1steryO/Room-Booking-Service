@@ -1,0 +1,42 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/bookings/my"
+  method: GET
+  headers:
+    - key: Accept
+      value: application/json
+    - key: Authorization
+      value: Bearer <token>
+      description: "Added as a part of security scheme: bearer"
+  body:
+    type: text
+    content: ""
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: >-
+      {
+        "bookings": [
+          {
+            "id": "6ac75146-eade-5c80-d2de-8930cb2bccfe",
+            "slotId": "03eb2af9-8302-be19-8580-72c62b78c109",
+            "userId": "9edfa56d-bd6e-c16b-8c50-7152f779e859",
+            "status": "cancelled",
+            "conferenceLink": "https://mrluGXkESERWpLlivzLsWtsJeFwbmnAT.nugck+OFJem3WoKrxk34hiM8CoPwDG-LQmucWPjidaBOmNBimfrS",
+            "createdAt": "1980-06-04T09:27:21.589Z"
+          },
+          {
+            "id": "da907914-a95e-025b-b580-522d754d3ae4",
+            "slotId": "e03877ab-fc43-eba8-6570-ca7962bb919c",
+            "userId": "c045f32c-2008-fa99-5b45-d94f1ef01d2a",
+            "status": "active",
+            "conferenceLink": "http://nzFNfvM.szkmmvmdq,36-Tgmg5XHBnRmpyt0FgM12rEciOvzOAmHsSkAqOJ4QWe6Sy",
+            "createdAt": "1990-08-02T20:46:13.777Z"
+          }
+        ]
+      }
+order: 1000

@@ -32,7 +32,7 @@ func TestCreateForbiddenForAdmin(t *testing.T) {
 	slotsRepo.ListAvailableByRoomAndDateMock.Optional()
 	bookingsRepo.CreateMock.Optional()
 	bookingsRepo.ListAllMock.Optional()
-	bookingsRepo.ListFutureByUserMock.Optional()
+	bookingsRepo.ListByUserMock.Optional()
 	bookingsRepo.CancelByOwnerMock.Optional()
 	bookingsRepo.GetByIDMock.Optional()
 	uc := bookingsuc.NewBookingsUsecase(
@@ -60,7 +60,7 @@ func TestCreatePastSlotRejected(t *testing.T) {
 	slotsRepo.ListAvailableByRoomAndDateMock.Optional()
 	bookingsRepo.CreateMock.Optional()
 	bookingsRepo.ListAllMock.Optional()
-	bookingsRepo.ListFutureByUserMock.Optional()
+	bookingsRepo.ListByUserMock.Optional()
 	bookingsRepo.CancelByOwnerMock.Optional()
 	bookingsRepo.GetByIDMock.Optional()
 	uc := bookingsuc.NewBookingsUsecase(
@@ -90,7 +90,7 @@ func TestCancelDelegates(t *testing.T) {
 	})
 	bookingsRepo.CreateMock.Optional()
 	bookingsRepo.ListAllMock.Optional()
-	bookingsRepo.ListFutureByUserMock.Optional()
+	bookingsRepo.ListByUserMock.Optional()
 	bookingsRepo.GetByIDMock.Optional()
 	uc := bookingsuc.NewBookingsUsecase(
 		slotsRepo,
@@ -117,7 +117,7 @@ func TestListAllForbiddenForUser(t *testing.T) {
 	slotsRepo.ListAvailableByRoomAndDateMock.Optional()
 	bookingsRepo.CreateMock.Optional()
 	bookingsRepo.ListAllMock.Optional()
-	bookingsRepo.ListFutureByUserMock.Optional()
+	bookingsRepo.ListByUserMock.Optional()
 	bookingsRepo.CancelByOwnerMock.Optional()
 	bookingsRepo.GetByIDMock.Optional()
 	uc := bookingsuc.NewBookingsUsecase(
@@ -142,7 +142,7 @@ func TestListAllInvalidPagination(t *testing.T) {
 	slotsRepo.ListAvailableByRoomAndDateMock.Optional()
 	bookingsRepo.CreateMock.Optional()
 	bookingsRepo.ListAllMock.Optional()
-	bookingsRepo.ListFutureByUserMock.Optional()
+	bookingsRepo.ListByUserMock.Optional()
 	bookingsRepo.CancelByOwnerMock.Optional()
 	bookingsRepo.GetByIDMock.Optional()
 	uc := bookingsuc.NewBookingsUsecase(
@@ -173,7 +173,7 @@ func TestListAllSuccess(t *testing.T) {
 		return expected, 1, nil
 	})
 	bookingsRepo.CreateMock.Optional()
-	bookingsRepo.ListFutureByUserMock.Optional()
+	bookingsRepo.ListByUserMock.Optional()
 	bookingsRepo.CancelByOwnerMock.Optional()
 	bookingsRepo.GetByIDMock.Optional()
 	uc := bookingsuc.NewBookingsUsecase(
@@ -201,7 +201,7 @@ func TestListMineForbiddenForAdmin(t *testing.T) {
 	slotsRepo.ListAvailableByRoomAndDateMock.Optional()
 	bookingsRepo.CreateMock.Optional()
 	bookingsRepo.ListAllMock.Optional()
-	bookingsRepo.ListFutureByUserMock.Optional()
+	bookingsRepo.ListByUserMock.Optional()
 	bookingsRepo.CancelByOwnerMock.Optional()
 	bookingsRepo.GetByIDMock.Optional()
 	uc := bookingsuc.NewBookingsUsecase(
@@ -226,7 +226,7 @@ func TestListMineSuccess(t *testing.T) {
 	slotsRepo.BulkUpsertMock.Optional()
 	slotsRepo.DateHasSlotsMock.Optional()
 	slotsRepo.ListAvailableByRoomAndDateMock.Optional()
-	bookingsRepo.ListFutureByUserMock.Set(func(_ context.Context, userID string, from time.Time) ([]domain.Booking, error) {
+	bookingsRepo.ListByUserMock.Set(func(_ context.Context, userID string, from time.Time) ([]domain.Booking, error) {
 		if userID != "u1" {
 			t.Fatalf("unexpected userID: %s", userID)
 		}
