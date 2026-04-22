@@ -2,13 +2,13 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/delivery/http/handlers/helpers"
+	"github.com/M1steryO/Room-Booking-Service/internal/delivery/http/handlers/helpers"
 	"net/http"
 	"time"
 
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/delivery/http/middleware"
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/delivery/http/models"
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
+	"github.com/M1steryO/Room-Booking-Service/internal/delivery/http/middleware"
+	"github.com/M1steryO/Room-Booking-Service/internal/delivery/http/models"
+	"github.com/M1steryO/Room-Booking-Service/internal/domain"
 	"github.com/go-chi/chi/v5"
 )
 

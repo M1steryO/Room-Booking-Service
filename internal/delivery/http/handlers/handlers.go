@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/usecase/auth"
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/usecase/bookings"
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/usecase/rooms"
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/usecase/schedules"
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/usecase/slots"
+	"github.com/M1steryO/Room-Booking-Service/internal/usecase/auth"
+	"github.com/M1steryO/Room-Booking-Service/internal/usecase/bookings"
+	"github.com/M1steryO/Room-Booking-Service/internal/usecase/rooms"
+	"github.com/M1steryO/Room-Booking-Service/internal/usecase/schedules"
+	"github.com/M1steryO/Room-Booking-Service/internal/usecase/slots"
 )
 
 type Handlers struct {

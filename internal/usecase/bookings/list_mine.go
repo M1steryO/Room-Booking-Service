@@ -3,7 +3,7 @@ package bookings
 import (
 	"context"
 
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
+	"github.com/M1steryO/Room-Booking-Service/internal/domain"
 )
 
 func (u *BookingsUsecase) ListMine(ctx context.Context, actorID string, actorRole domain.Role) ([]domain.Booking, error) {

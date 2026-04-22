@@ -2,13 +2,13 @@ package auth_test
 
 import (
 	"context"
-	"github.com/avito-internships/test-backend-1-M1steryO/pkg/security"
+	"github.com/M1steryO/Room-Booking-Service/pkg/security"
 	"testing"
 	"time"
 
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
-	repmocks "github.com/avito-internships/test-backend-1-M1steryO/internal/repository/mocks"
-	authuc "github.com/avito-internships/test-backend-1-M1steryO/internal/usecase/auth"
+	"github.com/M1steryO/Room-Booking-Service/internal/domain"
+	repmocks "github.com/M1steryO/Room-Booking-Service/internal/repository/mocks"
+	authuc "github.com/M1steryO/Room-Booking-Service/internal/usecase/auth"
 )
 
 type fixedClock struct {

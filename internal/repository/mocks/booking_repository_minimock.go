@@ -2,7 +2,7 @@
 
 package mocks
 
-//go:generate minimock -i github.com/avito-internships/test-backend-1-M1steryO/internal/repository.BookingRepository -o booking_repository_minimock.go -n BookingRepositoryMock -p mocks
+//go:generate minimock -i github.com/M1steryO/Room-Booking-Service/internal/repository.BookingRepository -o booking_repository_minimock.go -n BookingRepositoryMock -p mocks
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"time"
 	mm_time "time"
 
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
+	"github.com/M1steryO/Room-Booking-Service/internal/domain"
 	"github.com/gojuno/minimock/v3"
 )
 

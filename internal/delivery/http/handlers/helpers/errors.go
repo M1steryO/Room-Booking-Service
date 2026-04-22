@@ -1,11 +1,11 @@
 package helpers
 
 import (
-	"github.com/avito-internships/test-backend-1-M1steryO/pkg/logger"
+	"github.com/M1steryO/Room-Booking-Service/pkg/logger"
 	"net/http"
 
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/delivery/http/models"
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
+	"github.com/M1steryO/Room-Booking-Service/internal/delivery/http/models"
+	"github.com/M1steryO/Room-Booking-Service/internal/domain"
 )
 
 func WriteError(w http.ResponseWriter, r *http.Request, err error) {

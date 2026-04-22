@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
-	repmocks "github.com/avito-internships/test-backend-1-M1steryO/internal/repository/mocks"
-	slotsuc "github.com/avito-internships/test-backend-1-M1steryO/internal/usecase/slots"
+	"github.com/M1steryO/Room-Booking-Service/internal/domain"
+	repmocks "github.com/M1steryO/Room-Booking-Service/internal/repository/mocks"
+	slotsuc "github.com/M1steryO/Room-Booking-Service/internal/usecase/slots"
 )
 
 const validRoomID = "33333333-3333-3333-3333-333333333333"

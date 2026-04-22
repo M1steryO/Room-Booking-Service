@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"github.com/avito-internships/test-backend-1-M1steryO/pkg/utils/logger/handlers/slogpretty"
+	"github.com/M1steryO/Room-Booking-Service/pkg/utils/logger/handlers/slogpretty"
 	"log/slog"
 	"os"
 )

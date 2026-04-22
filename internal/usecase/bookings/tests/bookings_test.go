@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
-	repmocks "github.com/avito-internships/test-backend-1-M1steryO/internal/repository/mocks"
-	bookingsuc "github.com/avito-internships/test-backend-1-M1steryO/internal/usecase/bookings"
+	"github.com/M1steryO/Room-Booking-Service/internal/domain"
+	repmocks "github.com/M1steryO/Room-Booking-Service/internal/repository/mocks"
+	bookingsuc "github.com/M1steryO/Room-Booking-Service/internal/usecase/bookings"
 )
 
 type fixedClock struct{ now time.Time }

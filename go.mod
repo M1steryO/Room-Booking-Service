@@ -1,4 +1,4 @@
-module github.com/avito-internships/test-backend-1-M1steryO
+module github.com/M1steryO/Room-Booking-Service
 
 go 1.25.0
 

@@ -5,15 +5,15 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/avito-internships/test-backend-1-M1steryO/pkg/logger"
+	"github.com/M1steryO/Room-Booking-Service/pkg/logger"
 	"net/http"
 	"sync"
 	"time"
 
+	"github.com/M1steryO/Room-Booking-Service/internal/config"
+	httpx "github.com/M1steryO/Room-Booking-Service/internal/delivery/http"
+	"github.com/M1steryO/Room-Booking-Service/internal/delivery/http/middleware"
 	"github.com/M1steryO/platform_common/pkg/closer"
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/config"
-	httpx "github.com/avito-internships/test-backend-1-M1steryO/internal/delivery/http"
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/delivery/http/middleware"
 )
 
 const (

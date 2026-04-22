@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
+	"github.com/M1steryO/Room-Booking-Service/internal/domain"
 	"github.com/jackc/pgx/v4"
 )
 

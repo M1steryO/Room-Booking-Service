@@ -2,7 +2,7 @@
 
 package mocks
 
-//go:generate minimock -i github.com/avito-internships/test-backend-1-M1steryO/internal/repository.UserRepository -o user_repository_minimock.go -n UserRepositoryMock -p mocks
+//go:generate minimock -i github.com/M1steryO/Room-Booking-Service/internal/repository.UserRepository -o user_repository_minimock.go -n UserRepositoryMock -p mocks
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	mm_atomic "sync/atomic"
 	mm_time "time"
 
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
+	"github.com/M1steryO/Room-Booking-Service/internal/domain"
 	"github.com/gojuno/minimock/v3"
 )
 

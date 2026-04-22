@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
+	"github.com/M1steryO/Room-Booking-Service/internal/domain"
 )
 
 func (r *SlotsRepository) BulkUpsert(ctx context.Context, slots []domain.Slot) error {

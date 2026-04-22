@@ -3,8 +3,8 @@ package rooms
 import (
 	"context"
 
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
-	"github.com/avito-internships/test-backend-1-M1steryO/pkg/identity"
+	"github.com/M1steryO/Room-Booking-Service/internal/domain"
+	"github.com/M1steryO/Room-Booking-Service/pkg/identity"
 )
 
 func (u *RoomsUsecase) Create(ctx context.Context, actorRole domain.Role, name string, description *string, capacity *int) (domain.Room, error) {

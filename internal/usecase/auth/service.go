@@ -1,9 +1,9 @@
 package auth
 
 import (
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/repository"
-	"github.com/avito-internships/test-backend-1-M1steryO/pkg/clock"
-	"github.com/avito-internships/test-backend-1-M1steryO/pkg/security"
+	"github.com/M1steryO/Room-Booking-Service/internal/repository"
+	"github.com/M1steryO/Room-Booking-Service/pkg/clock"
+	"github.com/M1steryO/Room-Booking-Service/pkg/security"
 )
 
 const (

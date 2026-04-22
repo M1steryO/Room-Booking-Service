@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/avito-internships/test-backend-1-M1steryO/pkg/logger"
+	"github.com/M1steryO/Room-Booking-Service/pkg/logger"
 	"net/http"
 	"time"
 )

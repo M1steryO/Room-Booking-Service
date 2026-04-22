@@ -2,7 +2,7 @@ package security
 
 import (
 	"fmt"
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
+	"github.com/M1steryO/Room-Booking-Service/internal/domain"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"

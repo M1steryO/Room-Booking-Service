@@ -3,8 +3,8 @@ package auth
 import (
 	"context"
 
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
-	"github.com/avito-internships/test-backend-1-M1steryO/pkg/security"
+	"github.com/M1steryO/Room-Booking-Service/internal/domain"
+	"github.com/M1steryO/Room-Booking-Service/pkg/security"
 )
 
 func (u *AuthUsecase) Login(ctx context.Context, email string, password string) (string, error) {

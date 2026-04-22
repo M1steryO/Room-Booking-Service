@@ -2,12 +2,12 @@ package middleware
 
 import (
 	"context"
-	"github.com/avito-internships/test-backend-1-M1steryO/pkg/security"
+	"github.com/M1steryO/Room-Booking-Service/pkg/security"
 	"net/http"
 	"strings"
 
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/delivery/http/models"
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
+	"github.com/M1steryO/Room-Booking-Service/internal/delivery/http/models"
+	"github.com/M1steryO/Room-Booking-Service/internal/domain"
 )
 
 type actorContextKey struct{}

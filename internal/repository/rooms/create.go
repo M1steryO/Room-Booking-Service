@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
+	"github.com/M1steryO/Room-Booking-Service/internal/domain"
 )
 
 func (r *RoomsRepository) Create(ctx context.Context, room domain.Room) (domain.Room, error) {

@@ -1,6 +1,6 @@
 package rooms
 
-import "github.com/avito-internships/test-backend-1-M1steryO/internal/repository"
+import "github.com/M1steryO/Room-Booking-Service/internal/repository"
 
 type RoomsUsecase struct {
 	roomsRepo repository.RoomRepository

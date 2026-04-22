@@ -1,6 +1,6 @@
 package auth
 
-import "github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
+import "github.com/M1steryO/Room-Booking-Service/internal/domain"
 
 func (u *AuthUsecase) DummyLogin(role domain.Role) (string, error) {
 	if !role.Valid() {

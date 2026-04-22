@@ -5,8 +5,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/avito-internships/test-backend-1-M1steryO/internal/domain"
-	"github.com/avito-internships/test-backend-1-M1steryO/pkg/identity"
+	"github.com/M1steryO/Room-Booking-Service/internal/domain"
+	"github.com/M1steryO/Room-Booking-Service/pkg/identity"
 )
 
 func (u *BookingsUsecase) Create(ctx context.Context, actorID string, actorRole domain.Role, slotID string, createConferenceLink bool) (domain.Booking, error) {
